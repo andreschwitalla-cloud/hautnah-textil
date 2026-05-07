@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Hautnah Textil</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--an:#2B2D2F;--cy:#00C2C7;--bg:#f5f5f5;--white:#fff;--muted:#6b7280;--border:#e5e7eb}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--an)}
+    /* Topbar */
+    .topbar{background:var(--an);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-size:18px;font-weight:900;color:#fff}.logo span{color:var(--cy)}
+    .topbar a{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none}.topbar a:hover{color:#fff}
+    /* Layout */
+    .main{max-width:1100px;margin:32px auto;padding:0 20px}
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+    .stat{background:var(--white);border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .stat-num{font-size:32px;font-weight:800;color:var(--cy)}
+    .stat-label{font-size:13px;color:var(--muted);margin-top:4px}
+    /* Gespräche */
+    h2{font-size:16px;font-weight:700;margin-bottom:14px}
+    .konversationen{display:grid;grid-template-columns:280px 1fr;gap:16px;height:calc(100vh - 240px)}
+    /* Kontaktliste */
+    .kontakt-liste{background:var(--white);border-radius:10px;overflow-y:auto;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .kontakt{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+    .kontakt:hover,.kontakt.aktiv{background:#f0feff}
+    .kontakt-name{font-size:14px;font-weight:600}
+    .kontakt-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .kontakt-zeit{font-size:11px;color:var(--muted);float:right}
+    .badge{display:inline-block;background:var(--cy);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;margin-left:6px}
+    /* Chat */
+    .chat-bereich{background:var(--white);border-radius:10px;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .chat-header{padding:16px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:15px}
+    .chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+    .msg{max-width:75%;padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.5}
+    .msg.ein{background:#f3f4f6;align-self:flex-start;border-bottom-left-radius:3px}
+    .msg.aus{background:var(--cy);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+    .msg-zeit{font-size:11px;opacity:.6;margin-top:4px}
+    .chat-input{padding:16px;border-top:1px solid var(--border);display:flex;gap:10px}
+    .chat-input textarea{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;resize:none;outline:none}
+    .chat-input textarea:focus{border-color:var(--cy)}
+    .chat-input button{padding:10px 20px;background:var(--cy);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px}
+    .chat-input button:hover{background:#009fa4}
+    .leer{color:var(--muted);font-size:14px;text-align:center;padding:40px}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">HAUT<span>NAH</span> <small style="font-size:9px;letter-spacing:2px;opacity:.5">ADMIN</small></div>
+  <a href="/admin/logout">Abmelden</a>
+</div>
+
+<div class="main">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">{{ stats.gesamt }}</div>
+      <div class="stat-label">Nachrichten gesamt</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:{% if stats.neu > 0 %}#dc2626{% else %}var(--cy){% endif %}">{{ stats.neu }}</div>
+      <div class="stat-label">Ungelesen</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">{{ stats.anfragen }}</div>
+      <div class="stat-label">Anfragen</div>
+    </div>
+  </div>
+
+  <h2>WhatsApp Gespräche</h2>
+
+  <div class="konversationen">
+    <!-- Kontaktliste -->
+    <div class="kontakt-liste" id="kontaktListe">
+      {% set gesehen = [] %}
+      {% for n in nachrichten %}
+        {% if n.wa_id not in gesehen and n.typ == 'eingehend' %}
+          {% set _ = gesehen.append(n.wa_id) %}
+          <div class="kontakt {% if loop.first %}aktiv{% endif %}" onclick="ladeChat('{{ n.wa_id }}', '{{ n.name or n.telefon }}', this)">
+            <span class="kontakt-zeit">{{ n.erstellt_am[11:16] }}</span>
+            <div class="kontakt-name">
+              {{ n.name or n.telefon }}
+              {% if n.status == 'neu' %}<span class="badge">NEU</span>{% endif %}
+            </div>
+            <div class="kontakt-preview">{{ n.nachricht[:50] }}</div>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="leer">Noch keine Nachrichten</div>
+      {% endfor %}
+    </div>
+
+    <!-- Chat-Bereich -->
+    <div class="chat-bereich">
+      <div class="chat-header" id="chatHeader">Gespräch auswählen</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="leer">← Kontakt aus der Liste auswählen</div>
+      </div>
+      <div class="chat-input">
+        <textarea id="antwortText" rows="2" placeholder="Antwort schreiben …"></textarea>
+        <button onclick="sendeAntwort()">Senden</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let aktiverWaId = null;
+const alleNachrichten = {{ nachrichten | tojson }};
+
+function ladeChat(waId, name, el) {
+  aktiverWaId = waId;
+  document.querySelectorAll('.kontakt').forEach(k => k.classList.remove('aktiv'));
+  el.classList.add('aktiv');
+  document.getElementById('chatHeader').textContent = name;
+
+  const msgs = alleNachrichten.filter(n => n.wa_id === waId);
+  const box = document.getElementById('chatMessages');
+  if (!msgs.length) { box.innerHTML = '<div class="leer">Keine Nachrichten</div>'; return; }
+
+  box.innerHTML = msgs.reverse().map(n => `
+    <div class="msg ${n.typ === 'eingehend' ? 'ein' : 'aus'}">
+      ${n.nachricht.replace(/\n/g,'<br>')}
+      <div class="msg-zeit">${n.erstellt_am.slice(11,16)}</div>
+    </div>
+  `).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendeAntwort() {
+  if (!aktiverWaId) return alert('Bitte zuerst ein Gespräch auswählen.');
+  const text = document.getElementById('antwortText').value.trim();
+  if (!text) return;
+  const r = await fetch('/admin/antworten', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({wa_id: aktiverWaId, text})
+  });
+  const d = await r.json();
+  if (d.ok) {
+    document.getElementById('antwortText').value = '';
+    location.reload();
+  } else {
+    alert('Fehler beim Senden.');
+  }
+}
+
+document.getElementById('antwortText').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendeAntwort(); }
+});
+
+// Erstes Gespräch automatisch öffnen
+const ersterKontakt = document.querySelector('.kontakt');
+if (ersterKontakt) ersterKontakt.click();
+
+// Auto-Refresh alle 30s
+setInterval(() => location.reload(), 30000);
+</script>
+</body>
+</html>
