@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.hautnah.backend</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/andreschwitalla/hautnah/backend/venv/bin/python</string>
+        <string>/Users/andreschwitalla/hautnah/backend/watchdog.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/andreschwitalla/hautnah/backend</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <!-- Werte aus .env werden von python-dotenv geladen -->
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/andreschwitalla/hautnah/backend/hautnah.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/andreschwitalla/hautnah/backend/hautnah.log</string>
+</dict>
+</plist>
