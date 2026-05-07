@@ -337,15 +337,15 @@ ul { list-style: none; }
 }
 .galerie-bild--1 {
   background-color: var(--anthrazit);
-  background-image: url('assets/foto-1.jpg');
+  background-image: url('assets/foto-1.jpg'), url('https://picsum.photos/seed/jersey/1200/840');
 }
 .galerie-bild--2 {
   background-color: #2a3540;
-  background-image: url('assets/foto-2.jpg');
+  background-image: url('assets/foto-2.jpg'), url('https://picsum.photos/seed/training/600/840');
 }
 .galerie-bild--3 {
   background-color: #1a2830;
-  background-image: url('assets/foto-3.jpg');
+  background-image: url('assets/foto-3.jpg'), url('https://picsum.photos/seed/sport/600/840');
 }
 .galerie-overlay {
   position: absolute;
