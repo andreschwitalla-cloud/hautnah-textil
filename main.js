@@ -18,9 +18,9 @@ mobileMenu.querySelectorAll('a').forEach(a => {
 document.getElementById('kontaktForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(this));
-  const subject = encodeURIComponent('Anfrage Hautnah Textil – ' + (data.druckart || 'Allgemein'));
+  const subject = encodeURIComponent('Anfrage – ' + (data.druckart || 'Allgemein') + ' – ' + (data.name || ''));
   const body = encodeURIComponent(
-    `Name: ${data.name}\nE-Mail: ${data.email}\nDruckart: ${data.druckart || '–'}\nMenge: ${data.menge || '–'}\n\n${data.nachricht}`
+    `Verein / Name: ${data.name}\nE-Mail: ${data.email}\nBedarf: ${data.druckart || '–'}\nStückzahl: ${data.menge || '–'}\n\n${data.nachricht}`
   );
-  window.location.href = `mailto:info@hautnah-textil.de?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:hautnah-textil@gmx.de?subject=${subject}&body=${body}`;
 });
