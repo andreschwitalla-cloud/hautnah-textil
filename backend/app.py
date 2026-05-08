@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import json
 import requests as http
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from database import init_db, get_db, formular_speichern
@@ -60,19 +61,36 @@ def admin_dashboard():
         namen = dict(db.execute(
             'SELECT wa_id, name FROM sessions WHERE name IS NOT NULL'
         ).fetchall())
-        formulare = db.execute(
+        rows = db.execute(
             'SELECT * FROM formulare ORDER BY erstellt_am DESC LIMIT 50'
         ).fetchall()
+        formulare = []
+        for r in rows:
+            fd = dict(r)
+            fd['daten'] = json.loads(fd['data'] or '{}')
+            formulare.append(fd)
         stats = {
-            'gesamt':   db.execute('SELECT COUNT(*) FROM nachrichten WHERE richtung="eingehend"').fetchone()[0],
-            'neu':      db.execute('SELECT COUNT(*) FROM formulare WHERE status="neu"').fetchone()[0],
-            'anfragen': db.execute('SELECT COUNT(*) FROM formulare').fetchone()[0],
+            'gesamt':         db.execute('SELECT COUNT(*) FROM nachrichten WHERE typ="eingehend"').fetchone()[0],
+            'neu':            db.execute('SELECT COUNT(*) FROM formulare WHERE status="neu"').fetchone()[0],
+            'anfragen':       db.execute('SELECT COUNT(*) FROM formulare').fetchone()[0],
+            'gelesen':        db.execute('SELECT COUNT(*) FROM formulare WHERE status="gelesen"').fetchone()[0],
+            'heute_erledigt': db.execute("SELECT COUNT(*) FROM formulare WHERE status='erledigt' AND date(erstellt_am)=date('now','localtime')").fetchone()[0],
+            'monat':          db.execute("SELECT COUNT(*) FROM formulare WHERE strftime('%Y-%m',erstellt_am)=strftime('%Y-%m','now','localtime')").fetchone()[0],
         }
+        typ_rows = db.execute(
+            'SELECT typ, COUNT(*) as cnt FROM formulare GROUP BY typ ORDER BY cnt DESC'
+        ).fetchall()
+        max_cnt = typ_rows[0]['cnt'] if typ_rows else 1
+        typ_stats = [
+            {'typ': r['typ'], 'cnt': r['cnt'], 'pct': int(r['cnt'] / max_cnt * 100)}
+            for r in typ_rows
+        ]
     return render_template('admin.html',
                            nachrichten=nachrichten,
                            formulare=formulare,
                            stats=stats,
-                           namen=namen)
+                           namen=namen,
+                           typ_stats=typ_stats)
 
 @app.route('/admin/antworten', methods=['POST'])
 def admin_antworten():
@@ -94,6 +112,61 @@ def formular_status(fid):
         return jsonify({'ok': False})
     with get_db() as db:
         db.execute('UPDATE formulare SET status=? WHERE id=?', (status, fid))
+    return jsonify({'ok': True})
+
+@app.route('/admin/anfrage/<int:fid>')
+def admin_anfrage_detail(fid):
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    with get_db() as db:
+        row = db.execute('SELECT * FROM formulare WHERE id=?', (fid,)).fetchone()
+    if not row:
+        return 'Nicht gefunden', 404
+    f = dict(row)
+    f['daten'] = json.loads(f['data'] or '{}')
+    return render_template('admin_detail.html', f=f)
+
+@app.route('/admin/anfrage/<int:fid>/antworten', methods=['POST'])
+def admin_anfrage_antworten(fid):
+    if not session.get('admin'):
+        return jsonify({'ok': False}), 401
+    with get_db() as db:
+        row = db.execute('SELECT * FROM formulare WHERE id=?', (fid,)).fetchone()
+    if not row:
+        return jsonify({'ok': False, 'error': 'Nicht gefunden'}), 404
+    f = dict(row)
+    daten = json.loads(f['data'] or '{}')
+    email_to = daten.get('email', '')
+    if not email_to:
+        return jsonify({'ok': False, 'error': 'Keine E-Mail-Adresse bekannt'})
+    text = (request.json or {}).get('text', '').strip()
+    if not text:
+        return jsonify({'ok': False, 'error': 'Kein Text'})
+    api_key = os.getenv('RESEND_API_KEY')
+    if not api_key:
+        return jsonify({'ok': False, 'error': 'RESEND_API_KEY fehlt'})
+    payload = {
+        'from':     'Hautnah Textil <noreply@hautnah-textil.de>',
+        'to':       [email_to],
+        'subject':  f"Re: Ihre Anfrage bei Hautnah Textil – {f['typ']}",
+        'text':     text,
+        'reply_to': 'hautnah-textil@gmx.de',
+    }
+    try:
+        r = http.post(
+            'https://api.resend.com/emails',
+            headers={'Authorization': f'Bearer {api_key}'},
+            json=payload,
+            timeout=8
+        )
+        if not r.ok:
+            app.logger.error(f'Resend Fehler {r.status_code}: {r.text}')
+            return jsonify({'ok': False, 'error': r.text})
+    except Exception as e:
+        app.logger.error(f'Resend Exception: {e}')
+        return jsonify({'ok': False, 'error': str(e)})
+    with get_db() as db:
+        db.execute("UPDATE formulare SET status='erledigt' WHERE id=?", (fid,))
     return jsonify({'ok': True})
 
 @app.route('/admin/nachrichten')

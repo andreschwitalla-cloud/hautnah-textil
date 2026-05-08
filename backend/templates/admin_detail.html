@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anfrage #{{ f.id }} – Hautnah Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F5F5F7;
+      --white: #FFFFFF;
+      --text: #1C1C1E;
+      --muted: #6B7280;
+      --subtle: #9CA3AF;
+      --border: #E5E7EB;
+      --border-2: #D1D5DB;
+      --cyan: #00C2C7;
+      --anthrazit: #2B2D2F;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+    .topbar { background: var(--anthrazit); height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+    .topbar-logo { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: .5px; }
+    .topbar-logo span { color: var(--cyan); }
+    .topbar-logo small { font-size: 10px; font-weight: 400; opacity: .4; letter-spacing: 3px; margin-left: 8px; }
+    .topbar-logout { font-size: 12px; color: rgba(255,255,255,.35); text-decoration: none; }
+    .topbar-logout:hover { color: rgba(255,255,255,.7); }
+
+    .main { max-width: 1000px; margin: 0 auto; padding: 24px 20px; }
+
+    .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); border: 0.5px solid var(--border-2); border-radius: var(--radius); padding: 6px 12px; background: var(--white); text-decoration: none; }
+    .back-btn:hover { background: var(--bg); }
+    .detail-title { font-size: 16px; font-weight: 600; flex: 1; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .sb-neu      { background: #E0F8F8; color: #007A7E; }
+    .sb-gelesen  { background: #FEF3CD; color: #854F0B; }
+    .sb-erledigt { background: #E8F5E1; color: #3A7A1A; }
+
+    .status-select { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 5px 10px; font-size: 12px; font-family: inherit; background: var(--white); cursor: pointer; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+    .card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
+    .card-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 13px; color: var(--muted); }
+    .info-value { font-size: 13px; font-weight: 500; color: var(--text); text-align: right; }
+    .info-value.cyan { color: var(--cyan); }
+
+    .nachricht-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 12px; }
+    .nachricht-text { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
+
+    .artikel-section { margin-bottom: 12px; }
+    .section-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .artikel-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 8px; }
+    .artikel-header { background: var(--anthrazit); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .artikel-name { font-size: 13px; color: #fff; font-weight: 500; }
+    .artikel-nr { font-size: 11px; color: var(--cyan); }
+    .artikel-body { padding: 12px 14px; }
+    .artikel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .artikel-field { background: var(--bg); border-radius: var(--radius); padding: 8px 10px; }
+    .artikel-field-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+    .artikel-field-value { font-size: 13px; font-weight: 500; }
+
+    .tl-item { display: flex; gap: 10px; padding: 6px 0; }
+    .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); margin-top: 4px; flex-shrink: 0; }
+    .tl-dot.gray { background: var(--border-2); }
+    .tl-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .tl-time { font-size: 11px; color: var(--subtle); }
+
+    .reply-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-top: 12px; }
+    .reply-textarea { width: 100%; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; font-family: inherit; background: var(--bg); color: var(--text); resize: vertical; min-height: 100px; margin: 10px 0; outline: none; }
+    .reply-textarea:focus { border-color: var(--cyan); }
+    .reply-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+    .btn-secondary { padding: 8px 16px; border-radius: var(--radius); font-size: 13px; border: 0.5px solid var(--border-2); background: transparent; color: var(--text); cursor: pointer; font-family: inherit; }
+    .btn-secondary:hover { background: var(--bg); }
+    .btn-primary { padding: 8px 20px; border-radius: var(--radius); font-size: 13px; border: none; background: var(--anthrazit); color: var(--cyan); cursor: pointer; font-weight: 500; font-family: inherit; }
+    .btn-primary:hover { opacity: .85; }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+    .reply-success { font-size: 13px; color: #0F6E56; background: #E1F5EE; padding: 8px 14px; border-radius: var(--radius); display: none; }
+    .reply-error { font-size: 13px; color: #A32D2D; background: #FCEBEB; padding: 8px 14px; border-radius: var(--radius); display: none; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">HAUT<span>NAH</span><small>ADMIN</small></div>
+  <a href="/admin/logout" class="topbar-logout">Abmelden</a>
+</div>
+
+<div class="main">
+
+  <div class="detail-header">
+    <a href="/admin" class="back-btn">← Zurück</a>
+    <span class="detail-title">
+      Anfrage #{{ f.id }} –
+      {% if f.typ == 'bestellung' %}Bestellung
+      {% elif f.typ == 'angebot' %}Angebotsanfrage
+      {% elif f.typ == 'liefertermin' %}Liefertermin
+      {% elif f.typ == 'reklamation' %}Reklamation
+      {% elif f.typ == 'rueckruf' %}Rückruf
+      {% else %}Nachricht{% endif %}
+      {% if f.name %} · {{ f.name }}{% endif %}
+    </span>
+    <span class="status-badge sb-{{ f.status }}">
+      {% if f.status == 'neu' %}● Neu
+      {% elif f.status == 'gelesen' %}● Offen
+      {% else %}● Erledigt{% endif %}
+    </span>
+    <select class="status-select" id="statusSelect" onchange="aktualisiereStatus(this.value)">
+      <option value="neu" {% if f.status == 'neu' %}selected{% endif %}>Neu</option>
+      <option value="gelesen" {% if f.status == 'gelesen' %}selected{% endif %}>Offen</option>
+      <option value="erledigt" {% if f.status == 'erledigt' %}selected{% endif %}>Erledigt</option>
+    </select>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Kontaktdaten</div>
+      <div class="info-row">
+        <span class="info-label">Name</span>
+        <span class="info-value">{{ f.name or '–' }}</span>
+      </div>
+      {% if f.daten.get('vereinsname') and f.daten.get('vereinsname') != f.name %}
+      <div class="info-row">
+        <span class="info-label">Verein</span>
+        <span class="info-value">{{ f.daten.get('vereinsname') }}</span>
+      </div>
+      {% endif %}
+      {% if f.daten.get('email') %}
+      <div class="info-row">
+        <span class="info-label">E-Mail</span>
+        <span class="info-value cyan">{{ f.daten.get('email') }}</span>
+      </div>
+      {% endif %}
+      {% if f.daten.get('telefon') %}
+      <div class="info-row">
+        <span class="info-label">Telefon</span>
+        <span class="info-value">{{ f.daten.get('telefon') }}</span>
+      </div>
+      {% endif %}
+      {% if f.daten.get('bestellnummer') %}
+      <div class="info-row">
+        <span class="info-label">Bestellnummer</span>
+        <span class="info-value">{{ f.daten.get('bestellnummer') }}</span>
+      </div>
+      {% endif %}
+      {% if f.daten.get('lieferdatum') %}
+      <div class="info-row">
+        <span class="info-label">Wunschlieferdatum</span>
+        <span class="info-value">{{ f.daten.get('lieferdatum') }}</span>
+      </div>
+      {% endif %}
+      {% if f.daten.get('rueckruf_zeit') %}
+      <div class="info-row">
+        <span class="info-label">Rückrufzeit</span>
+        <span class="info-value">{{ f.daten.get('rueckruf_zeit') }}</span>
+      </div>
+      {% endif %}
+      <div class="info-row">
+        <span class="info-label">Quelle</span>
+        <span class="info-value">{{ f.daten.get('quelle', 'WhatsApp') }}</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Verlauf</div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-text">Anfrage eingegangen</div>
+          <div class="tl-time">{{ f.erstellt_am[:16] }}</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot {% if f.status == 'neu' %}gray{% endif %}"></div>
+        <div>
+          {% if f.status == 'neu' %}
+          <div class="tl-text">Noch nicht geöffnet</div>
+          <div class="tl-time">–</div>
+          {% else %}
+          <div class="tl-text">In Bearbeitung</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot {% if f.status != 'erledigt' %}gray{% endif %}"></div>
+        <div>
+          {% if f.status == 'erledigt' %}
+          <div class="tl-text">Erledigt</div>
+          {% else %}
+          <div class="tl-text">Noch nicht erledigt</div>
+          <div class="tl-time">–</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if f.daten.get('nachricht') %}
+  <div class="nachricht-card">
+    <div class="card-title">Nachricht</div>
+    <div class="nachricht-text">{{ f.daten.get('nachricht') }}</div>
+  </div>
+  {% endif %}
+
+  {% if f.daten.get('artikel') %}
+  <div class="artikel-section">
+    <div class="section-label">Artikel</div>
+    {% for a in f.daten.get('artikel') %}
+    <div class="artikel-card">
+      <div class="artikel-header">
+        <span class="artikel-name">{{ a.get('artikel', '–') }}</span>
+        <span class="artikel-nr">Pos. {{ loop.index }}</span>
+      </div>
+      <div class="artikel-body">
+        <div class="artikel-grid">
+          <div class="artikel-field">
+            <div class="artikel-field-label">Stückzahl</div>
+            <div class="artikel-field-value">{{ a.get('menge', '–') }} Stück</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="reply-card">
+    <div class="card-title">Antwort per E-Mail{% if f.daten.get('email') %} an {{ f.daten.get('email') }}{% endif %}</div>
+    <textarea class="reply-textarea" id="replyText" placeholder="Antwort schreiben …"></textarea>
+    <div class="reply-actions">
+      <span class="reply-success" id="replySuccess">Gesendet und als erledigt markiert.</span>
+      <span class="reply-error" id="replyError">Fehler beim Senden.</span>
+      <button class="btn-secondary" onclick="nurErledigen()">Nur als erledigt markieren</button>
+      <button class="btn-primary" id="sendBtn" onclick="sendeAntwort()">Senden</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const FID = {{ f.id }};
+
+async function aktualisiereStatus(status) {
+  await fetch(`/admin/formular/${FID}/status`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({status})
+  });
+}
+
+async function nurErledigen() {
+  await aktualisiereStatus('erledigt');
+  document.getElementById('statusSelect').value = 'erledigt';
+  document.getElementById('replySuccess').style.display = 'block';
+  document.getElementById('replySuccess').textContent = 'Als erledigt markiert.';
+}
+
+async function sendeAntwort() {
+  const text = document.getElementById('replyText').value.trim();
+  if (!text) return;
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Wird gesendet …';
+  document.getElementById('replySuccess').style.display = 'none';
+  document.getElementById('replyError').style.display = 'none';
+
+  const r = await fetch(`/admin/anfrage/${FID}/antworten`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text})
+  });
+  const d = await r.json();
+  if (d.ok) {
+    document.getElementById('replySuccess').style.display = 'block';
+    document.getElementById('replyText').value = '';
+    document.getElementById('statusSelect').value = 'erledigt';
+    btn.textContent = 'Gesendet';
+  } else {
+    document.getElementById('replyError').style.display = 'block';
+    document.getElementById('replyError').textContent = d.error || 'Fehler beim Senden.';
+    btn.disabled = false;
+    btn.textContent = 'Senden';
+  }
+}
+</script>
+</body>
+</html>

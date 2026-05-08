@@ -5,104 +5,273 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin – Hautnah Textil</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    :root{--an:#2B2D2F;--cy:#00C2C7;--bg:#f5f5f5;--white:#fff;--muted:#6b7280;--border:#e5e7eb}
-    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--an)}
-    /* Topbar */
-    .topbar{background:var(--an);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
-    .logo{font-size:18px;font-weight:900;color:#fff}.logo span{color:var(--cy)}
-    .topbar a{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none}.topbar a:hover{color:#fff}
-    /* Layout */
-    .main{max-width:1100px;margin:32px auto;padding:0 20px}
-    /* Stats */
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
-    .stat{background:var(--white);border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .stat-num{font-size:32px;font-weight:800;color:var(--cy)}
-    .stat-label{font-size:13px;color:var(--muted);margin-top:4px}
-    /* Gespräche */
-    h2{font-size:16px;font-weight:700;margin-bottom:14px}
-    .konversationen{display:grid;grid-template-columns:280px 1fr;gap:16px;height:calc(100vh - 240px)}
-    /* Kontaktliste */
-    .kontakt-liste{background:var(--white);border-radius:10px;overflow-y:auto;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .kontakt{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
-    .kontakt:hover,.kontakt.aktiv{background:#f0feff}
-    .kontakt-name{font-size:14px;font-weight:600}
-    .kontakt-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-    .kontakt-zeit{font-size:11px;color:var(--muted);float:right}
-    .badge{display:inline-block;background:var(--cy);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;margin-left:6px}
-    /* Chat */
-    .chat-bereich{background:var(--white);border-radius:10px;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .chat-header{padding:16px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:15px}
-    .chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
-    .msg{max-width:75%;padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.5}
-    .msg.ein{background:#f3f4f6;align-self:flex-start;border-bottom-left-radius:3px}
-    .msg.aus{background:var(--cy);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
-    .msg-zeit{font-size:11px;opacity:.6;margin-top:4px}
-    .chat-input{padding:16px;border-top:1px solid var(--border);display:flex;gap:10px}
-    .chat-input textarea{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;resize:none;outline:none}
-    .chat-input textarea:focus{border-color:var(--cy)}
-    .chat-input button{padding:10px 20px;background:var(--cy);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px}
-    .chat-input button:hover{background:#009fa4}
-    .leer{color:var(--muted);font-size:14px;text-align:center;padding:40px}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F5F5F7;
+      --white: #FFFFFF;
+      --text: #1C1C1E;
+      --muted: #6B7280;
+      --subtle: #9CA3AF;
+      --border: #E5E7EB;
+      --border-2: #D1D5DB;
+      --cyan: #00C2C7;
+      --anthrazit: #2B2D2F;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+    .topbar { background: var(--anthrazit); height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+    .topbar-logo { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: .5px; }
+    .topbar-logo span { color: var(--cyan); }
+    .topbar-logo small { font-size: 10px; font-weight: 400; opacity: .4; letter-spacing: 3px; margin-left: 8px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-user { font-size: 12px; color: rgba(255,255,255,.5); }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; background: #3a3c3f; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--cyan); }
+    .topbar-logout { font-size: 12px; color: rgba(255,255,255,.35); text-decoration: none; margin-left: 8px; }
+    .topbar-logout:hover { color: rgba(255,255,255,.7); }
+
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+    .metric { background: var(--white); border-radius: var(--radius-lg); padding: 14px 16px; border: 0.5px solid var(--border); }
+    .metric-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .metric-value { font-size: 24px; font-weight: 600; color: var(--text); }
+    .metric-value.cyan { color: var(--cyan); }
+
+    .main-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .main-tab { padding: 8px 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .main-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+    .main-tab-content { display: none; }
+    .main-tab-content.active { display: block; }
+
+    .filter-tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+    .filter-tab { padding: 5px 12px; border-radius: var(--radius); font-size: 12px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--white); color: var(--muted); }
+    .filter-tab.active { background: var(--anthrazit); color: var(--cyan); border-color: var(--anthrazit); }
+
+    .sidebar-layout { display: grid; grid-template-columns: 1fr 264px; gap: 14px; align-items: start; }
+
+    .table-wrap { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 0.5px solid var(--border); background: #FAFAFA; }
+    .tbl td { padding: 11px 14px; border-bottom: 0.5px solid var(--border); color: var(--text); vertical-align: middle; }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl tbody tr { cursor: pointer; transition: background .1s; }
+    .tbl tbody tr:hover td { background: #F0FEFF; }
+    .tbl-empty { padding: 48px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+    .b-bestellung   { background: #E1F5EE; color: #0F6E56; }
+    .b-angebot      { background: #E6F1FB; color: #185FA5; }
+    .b-liefertermin { background: #FAEEDA; color: #854F0B; }
+    .b-reklamation  { background: #FCEBEB; color: #A32D2D; }
+    .b-rueckruf     { background: #EEEDFE; color: #534AB7; }
+    .b-nachricht    { background: #F1EFE8; color: #5F5E5A; }
+
+    .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot-neu      { background: var(--cyan); }
+    .dot-gelesen  { background: #EF9F27; }
+    .dot-erledigt { background: #5A9E2F; }
+
+    .status-select { border: 0.5px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 11px; font-family: inherit; background: var(--white); cursor: pointer; color: var(--text); }
+
+    .btn-open { padding: 4px 12px; border-radius: var(--radius); font-size: 12px; border: 0.5px solid var(--border-2); background: transparent; color: var(--text); cursor: pointer; }
+    .btn-open:hover { background: var(--bg); }
+
+    .widget { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 12px; }
+    .widget-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+    .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .bar-label { font-size: 11px; color: var(--muted); width: 80px; text-align: right; flex-shrink: 0; }
+    .bar-track { flex: 1; height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; background: var(--cyan); }
+    .bar-fill.dark { background: var(--anthrazit); }
+    .bar-num { font-size: 11px; color: var(--muted); width: 20px; text-align: right; }
+
+    .chat-layout { display: grid; grid-template-columns: 260px 1fr; gap: 14px; height: calc(100vh - 260px); }
+    .chat-list { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow-y: auto; }
+    .chat-item { padding: 12px 14px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background .1s; }
+    .chat-item:hover, .chat-item.active { background: #F0FEFF; }
+    .chat-item-name { font-size: 13px; font-weight: 600; }
+    .chat-item-preview { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .chat-item-time { font-size: 11px; color: var(--subtle); float: right; }
+    .chat-panel { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); display: flex; flex-direction: column; }
+    .chat-header { padding: 14px 16px; border-bottom: 0.5px solid var(--border); font-size: 13px; font-weight: 600; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .msg { max-width: 72%; padding: 9px 13px; border-radius: 10px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .msg.ein { background: #F3F4F6; align-self: flex-start; border-bottom-left-radius: 3px; }
+    .msg.aus { background: var(--cyan); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+    .msg-time { font-size: 10px; opacity: .55; margin-top: 3px; }
+    .chat-input-row { padding: 12px; border-top: 0.5px solid var(--border); display: flex; gap: 8px; }
+    .chat-input-row textarea { flex: 1; padding: 9px 12px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 13px; font-family: inherit; resize: none; outline: none; }
+    .chat-input-row textarea:focus { border-color: var(--cyan); }
+    .chat-send { padding: 9px 18px; background: var(--anthrazit); color: var(--cyan); border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; }
+    .leer { color: var(--muted); font-size: 13px; text-align: center; padding: 40px; }
   </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="logo">HAUT<span>NAH</span> <small style="font-size:9px;letter-spacing:2px;opacity:.5">ADMIN</small></div>
-  <a href="/admin/logout">Abmelden</a>
+  <div class="topbar-logo">HAUT<span>NAH</span><small>ADMIN</small></div>
+  <div class="topbar-right">
+    <span class="topbar-user">Maik Portmann</span>
+    <div class="avatar">MP</div>
+    <a href="/admin/logout" class="topbar-logout">Abmelden</a>
+  </div>
 </div>
 
 <div class="main">
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-num">{{ stats.gesamt }}</div>
-      <div class="stat-label">Nachrichten gesamt</div>
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Neue Anfragen</div>
+      <div class="metric-value cyan">{{ stats.neu }}</div>
     </div>
-    <div class="stat">
-      <div class="stat-num" style="color:{% if stats.neu > 0 %}#dc2626{% else %}var(--cy){% endif %}">{{ stats.neu }}</div>
-      <div class="stat-label">Ungelesen</div>
+    <div class="metric">
+      <div class="metric-label">In Bearbeitung</div>
+      <div class="metric-value">{{ stats.gelesen }}</div>
     </div>
-    <div class="stat">
-      <div class="stat-num">{{ stats.anfragen }}</div>
-      <div class="stat-label">Anfragen</div>
+    <div class="metric">
+      <div class="metric-label">Heute erledigt</div>
+      <div class="metric-value">{{ stats.heute_erledigt }}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Gesamt (Monat)</div>
+      <div class="metric-value">{{ stats.monat }}</div>
     </div>
   </div>
 
-  <h2>WhatsApp Gespräche</h2>
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="switchTab('anfragen', this)">Anfragen{% if stats.neu > 0 %} ({{ stats.neu }}){% endif %}</button>
+    <button class="main-tab" onclick="switchTab('gespraeche', this)">Gespräche</button>
+  </div>
 
-  <div class="konversationen">
-    <!-- Kontaktliste -->
-    <div class="kontakt-liste" id="kontaktListe">
-      {% set gesehen = [] %}
-      {% for n in nachrichten %}
-        {% if n.wa_id not in gesehen and n.typ == 'eingehend' %}
-          {% set _ = gesehen.append(n.wa_id) %}
-          <div class="kontakt {% if loop.first %}aktiv{% endif %}" onclick="ladeChat('{{ n.wa_id }}', '{{ n.name or n.telefon }}', this)">
-            <span class="kontakt-zeit">{{ n.erstellt_am[11:16] }}</span>
-            <div class="kontakt-name">
-              {{ n.name or n.telefon }}
-              {% if n.status == 'neu' %}<span class="badge">NEU</span>{% endif %}
-            </div>
-            <div class="kontakt-preview">{{ n.nachricht[:50] }}</div>
-          </div>
-        {% endif %}
-      {% else %}
-        <div class="leer">Noch keine Nachrichten</div>
-      {% endfor %}
-    </div>
-
-    <!-- Chat-Bereich -->
-    <div class="chat-bereich">
-      <div class="chat-header" id="chatHeader">Gespräch auswählen</div>
-      <div class="chat-messages" id="chatMessages">
-        <div class="leer">← Kontakt aus der Liste auswählen</div>
+  <!-- Tab: Anfragen -->
+  <div class="main-tab-content active" id="tab-anfragen">
+    <div class="sidebar-layout">
+      <div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="alle">Alle</button>
+          <button class="filter-tab" data-filter="bestellung">Bestellung</button>
+          <button class="filter-tab" data-filter="angebot">Angebot</button>
+          <button class="filter-tab" data-filter="liefertermin">Liefertermin</button>
+          <button class="filter-tab" data-filter="reklamation">Reklamation</button>
+          <button class="filter-tab" data-filter="rueckruf">Rückruf</button>
+          <button class="filter-tab" data-filter="nachricht">Nachricht</button>
+        </div>
+        <div class="table-wrap">
+          {% if formulare %}
+          <table class="tbl" id="anfragenTabelle">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Typ</th>
+                <th>Name / Verein</th>
+                <th>Eingegangen</th>
+                <th>Status ändern</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for f in formulare %}
+              <tr data-typ="{{ f.typ }}" onclick="window.location='/admin/anfrage/{{ f.id }}'">
+                <td>
+                  <span class="status-dot dot-{{ f.status }}"></span>
+                  {% if f.status == 'neu' %}Neu
+                  {% elif f.status == 'gelesen' %}Offen
+                  {% else %}Erledigt{% endif %}
+                </td>
+                <td>
+                  <span class="badge b-{{ f.typ }}">
+                    {% if f.typ == 'bestellung' %}Bestellung
+                    {% elif f.typ == 'angebot' %}Angebot
+                    {% elif f.typ == 'liefertermin' %}Liefertermin
+                    {% elif f.typ == 'reklamation' %}Reklamation
+                    {% elif f.typ == 'rueckruf' %}Rückruf
+                    {% else %}Nachricht{% endif %}
+                  </span>
+                </td>
+                <td>
+                  <div style="font-weight:500">{{ f.name or '–' }}</div>
+                  {% if f.daten.get('vereinsname') and f.daten.get('vereinsname') != f.name %}
+                  <div style="font-size:11px;color:var(--muted)">{{ f.daten.get('vereinsname') }}</div>
+                  {% endif %}
+                </td>
+                <td style="color:var(--muted);white-space:nowrap">{{ f.erstellt_am[:16] }}</td>
+                <td onclick="event.stopPropagation()">
+                  <select class="status-select" onchange="aktualisiereStatus({{ f.id }}, this.value)">
+                    <option value="neu" {% if f.status == 'neu' %}selected{% endif %}>Neu</option>
+                    <option value="gelesen" {% if f.status == 'gelesen' %}selected{% endif %}>Offen</option>
+                    <option value="erledigt" {% if f.status == 'erledigt' %}selected{% endif %}>Erledigt</option>
+                  </select>
+                </td>
+                <td onclick="event.stopPropagation()">
+                  <button class="btn-open" onclick="window.location='/admin/anfrage/{{ f.id }}'">Öffnen</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="tbl-empty">Noch keine Anfragen eingegangen.</div>
+          {% endif %}
+        </div>
       </div>
-      <div class="chat-input">
-        <textarea id="antwortText" rows="2" placeholder="Antwort schreiben …"></textarea>
-        <button onclick="sendeAntwort()">Senden</button>
+
+      <div>
+        <div class="widget">
+          <div class="widget-title">Anfragen nach Typ</div>
+          {% for t in typ_stats %}
+          <div class="bar-row">
+            <span class="bar-label">
+              {% if t.typ == 'bestellung' %}Bestellung
+              {% elif t.typ == 'angebot' %}Angebot
+              {% elif t.typ == 'liefertermin' %}Liefertermin
+              {% elif t.typ == 'reklamation' %}Reklamation
+              {% elif t.typ == 'rueckruf' %}Rückruf
+              {% else %}Nachricht{% endif %}
+            </span>
+            <div class="bar-track">
+              <div class="bar-fill {% if loop.index > 2 %}dark{% endif %}" style="width:{{ t.pct }}%"></div>
+            </div>
+            <span class="bar-num">{{ t.cnt }}</span>
+          </div>
+          {% else %}
+          <div style="font-size:12px;color:var(--muted);padding:8px 0">Noch keine Daten.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Gespräche -->
+  <div class="main-tab-content" id="tab-gespraeche">
+    <div class="chat-layout">
+      <div class="chat-list" id="chatListe">
+        {% set gesehen = [] %}
+        {% for n in nachrichten | reverse %}
+          {% if n.wa_id not in gesehen and n.typ == 'eingehend' %}
+            {% set _ = gesehen.append(n.wa_id) %}
+            {% set anzeige_name = namen.get(n.wa_id, n.wa_id) %}
+            <div class="chat-item {% if loop.index == 1 %}active{% endif %}"
+                 onclick="ladeChat('{{ n.wa_id }}', '{{ anzeige_name }}', this)">
+              <span class="chat-item-time">{{ n.erstellt_am[11:16] }}</span>
+              <div class="chat-item-name">{{ anzeige_name }}</div>
+              <div class="chat-item-preview">{{ n.nachricht[:48] }}</div>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="leer">Noch keine Nachrichten</div>
+        {% endfor %}
+      </div>
+      <div class="chat-panel">
+        <div class="chat-header" id="chatHeader">Gespräch auswählen</div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="leer">← Kontakt auswählen</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea id="antwortText" rows="2" placeholder="Antwort schreiben …"></textarea>
+          <button class="chat-send" onclick="sendeAntwort()">Senden</button>
+        </div>
       </div>
     </div>
   </div>
@@ -110,23 +279,48 @@
 </div>
 
 <script>
-let aktiverWaId = null;
 const alleNachrichten = {{ nachrichten | tojson }};
+const alleNamen = {{ namen | tojson }};
+let aktiverWaId = null;
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.main-tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+document.querySelectorAll('.filter-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('#anfragenTabelle tbody tr').forEach(row => {
+      row.style.display = (filter === 'alle' || row.dataset.typ === filter) ? '' : 'none';
+    });
+  });
+});
+
+async function aktualisiereStatus(fid, status) {
+  await fetch(`/admin/formular/${fid}/status`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({status})
+  });
+}
 
 function ladeChat(waId, name, el) {
   aktiverWaId = waId;
-  document.querySelectorAll('.kontakt').forEach(k => k.classList.remove('aktiv'));
-  el.classList.add('aktiv');
-  document.getElementById('chatHeader').textContent = name;
-
+  document.querySelectorAll('.chat-item').forEach(k => k.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('chatHeader').textContent = name + ' · ' + waId;
   const msgs = alleNachrichten.filter(n => n.wa_id === waId);
   const box = document.getElementById('chatMessages');
   if (!msgs.length) { box.innerHTML = '<div class="leer">Keine Nachrichten</div>'; return; }
-
-  box.innerHTML = msgs.reverse().map(n => `
+  box.innerHTML = msgs.map(n => `
     <div class="msg ${n.typ === 'eingehend' ? 'ein' : 'aus'}">
       ${n.nachricht.replace(/\n/g,'<br>')}
-      <div class="msg-zeit">${n.erstellt_am.slice(11,16)}</div>
+      <div class="msg-time">${n.erstellt_am.slice(0,16)}</div>
     </div>
   `).join('');
   box.scrollTop = box.scrollHeight;
@@ -138,27 +332,21 @@ async function sendeAntwort() {
   if (!text) return;
   const r = await fetch('/admin/antworten', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({wa_id: aktiverWaId, text})
   });
   const d = await r.json();
-  if (d.ok) {
-    document.getElementById('antwortText').value = '';
-    location.reload();
-  } else {
-    alert('Fehler beim Senden.');
-  }
+  if (d.ok) { document.getElementById('antwortText').value = ''; location.reload(); }
+  else alert('Fehler beim Senden.');
 }
 
 document.getElementById('antwortText').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendeAntwort(); }
 });
 
-// Erstes Gespräch automatisch öffnen
-const ersterKontakt = document.querySelector('.kontakt');
-if (ersterKontakt) ersterKontakt.click();
+const ersterChat = document.querySelector('.chat-item');
+if (ersterChat) ersterChat.click();
 
-// Auto-Refresh alle 30s
 setInterval(() => location.reload(), 30000);
 </script>
 </body>
