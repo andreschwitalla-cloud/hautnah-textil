@@ -1,7 +1,10 @@
 /* ── Intro Splash ──────────────────────────────────────────────────────────── */
 .intro {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 9999;
   background: #111;
   display: flex;
@@ -78,7 +81,7 @@
   --shadow:    0 2px 16px rgba(0,0,0,.06);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   font-family: 'Inter', sans-serif;
