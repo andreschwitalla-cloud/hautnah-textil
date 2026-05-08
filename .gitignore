@@ -1,0 +1,7 @@
+.DS_Store
+backend/.env
+backend/hautnah.db
+backend/venv/
+backend/__pycache__/
+*.pyc
+assets/hautnah Textil Werbung.pdf

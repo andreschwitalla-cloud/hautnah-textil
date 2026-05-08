@@ -243,38 +243,72 @@
   <section class="kontakt" id="kontakt">
     <div class="container kontakt-inner">
       <div class="kontakt-text">
-        <span class="label">Jetzt starten</span>
-        <h2>Euer Verein. Euer Look.</h2>
-        <p>Schildert uns euer Vorhaben – wir melden uns innerhalb von 24 Stunden mit einem Angebot zurück.</p>
+        <span class="label">Kontakt</span>
+        <h2>Wie können wir helfen?</h2>
+        <p>Wählt einfach den passenden Grund aus – wir melden uns innerhalb von 24 Stunden zurück.</p>
         <div class="kontakt-infos">
-          <a href="mailto:hautnah-textil@gmx.de" class="kontakt-link">
-            hautnah-textil@gmx.de
-          </a>
-          <a href="https://wa.me/4901703306052" target="_blank" rel="noopener" class="kontakt-link kontakt-wa">
-            WhatsApp: 0170 3306052
+          <a href="mailto:hautnah-textil@gmx.de" class="kontakt-link">hautnah-textil@gmx.de</a>
+          <a href="https://wa.me/4901703306052" target="_blank" rel="noopener" class="kontakt-link kontakt-wa-klein">
+            Lieber direkt per WhatsApp schreiben →
           </a>
         </div>
       </div>
-      <form class="kontakt-form" id="kontaktForm">
-        <div class="form-row">
-          <input type="text" name="name" placeholder="Vereinsname / Name *" required>
-          <input type="email" name="email" placeholder="E-Mail *" required>
+      <div class="kontakt-form-wrap">
+        <div class="kategorie-picker" id="kategoriePicker">
+          <button type="button" class="kat-btn" data-kat="bestellung">Bestellung</button>
+          <button type="button" class="kat-btn" data-kat="angebot">Angebotsanfrage</button>
+          <button type="button" class="kat-btn" data-kat="liefertermin">Liefertermin anfragen</button>
+          <button type="button" class="kat-btn" data-kat="reklamation">Reklamation</button>
+          <button type="button" class="kat-btn" data-kat="rueckruf">Rückruf gewünscht</button>
+          <button type="button" class="kat-btn" data-kat="nachricht">Nachricht hinterlassen</button>
         </div>
-        <div class="form-row">
-          <select name="druckart">
-            <option value="" disabled selected>Was wird benötigt?</option>
-            <option>Trikots</option>
-            <option>Trainingskleidung</option>
-            <option>Komplettausstattung</option>
-            <option>Vereinsmerchandise</option>
-            <option>Weiß noch nicht</option>
-          </select>
-          <input type="number" name="menge" placeholder="Ungefähre Stückzahl" min="1">
+        <form class="kontakt-form" id="kontaktForm" novalidate>
+          <input type="hidden" name="kategorie" id="formKategorie">
+          <div class="form-group" id="fg-vereinsname" style="display:none">
+            <input type="text" name="vereinsname" id="inp-vereinsname" placeholder="Vereinsname / Name *">
+          </div>
+          <div class="form-group" id="fg-email" style="display:none">
+            <input type="email" name="email" id="inp-email" placeholder="E-Mail-Adresse *">
+          </div>
+          <div class="form-group" id="fg-telefon" style="display:none">
+            <input type="tel" name="telefon" id="inp-telefon" placeholder="Telefonnummer">
+          </div>
+          <div class="form-group" id="fg-artikel" style="display:none">
+            <div class="artikel-liste" id="artikelListe">
+              <div class="artikel-row">
+                <input type="text" name="artikel[]" placeholder="Artikel (z.B. Trikot, Hose, Jacke)">
+                <input type="number" name="menge[]" placeholder="Stück" min="1" style="width:90px">
+              </div>
+            </div>
+            <button type="button" class="btn-add-row">+ Artikel hinzufügen</button>
+          </div>
+          <div class="form-group" id="fg-bestellnummer" style="display:none">
+            <input type="text" name="bestellnummer" placeholder="Bestellnummer (falls vorhanden)">
+          </div>
+          <div class="form-group" id="fg-lieferdatum" style="display:none">
+            <label class="form-label">Wunsch-Lieferdatum</label>
+            <input type="date" name="lieferdatum">
+          </div>
+          <div class="form-group" id="fg-rueckruf_zeit" style="display:none">
+            <select name="rueckruf_zeit" id="inp-rueckruf_zeit">
+              <option value="" disabled selected>Bevorzugter Rückrufzeitraum</option>
+              <option>Morgens (8–12 Uhr)</option>
+              <option>Mittags (12–15 Uhr)</option>
+              <option>Nachmittags (15–18 Uhr)</option>
+            </select>
+          </div>
+          <div class="form-group" id="fg-nachricht" style="display:none">
+            <textarea name="nachricht" id="inp-nachricht" rows="4" placeholder="Eure Nachricht …"></textarea>
+          </div>
+          <button type="submit" class="btn-primary btn-full">Absenden</button>
+          <p class="form-hint">Pflichtfelder mit * markiert. Keine Weitergabe an Dritte.</p>
+        </form>
+        <div class="form-success" id="formSuccess">
+          <div class="form-success-check">✓</div>
+          <h3>Vielen Dank!</h3>
+          <p>Eure Anfrage ist bei uns eingegangen – wir melden uns innerhalb von 24 Stunden zurück.</p>
         </div>
-        <textarea name="nachricht" placeholder="Kurze Beschreibung: Welche Saison? Welche Größen? Welches Logo? …" rows="4"></textarea>
-        <button type="submit" class="btn-primary btn-full">Anfrage absenden</button>
-        <p class="form-hint">* Pflichtfelder. Keine Weitergabe an Dritte.</p>
-      </form>
+      </div>
     </div>
   </section>
 
@@ -306,14 +340,6 @@
       <p class="footer-copy">&copy; 2025 Hautnah Textil &middot; Maik Portmann</p>
     </div>
   </footer>
-
-  <!-- WhatsApp Floating Button -->
-  <a href="https://wa.me/4901703306052" target="_blank" rel="noopener" class="wa-float" title="WhatsApp schreiben">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="30" height="30" fill="#fff">
-      <path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.738 5.486 2.027 7.8L0 32l8.427-2.007A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.27 13.27 0 01-6.773-1.853l-.487-.29-5.003 1.193 1.233-4.867-.32-.5A13.267 13.267 0 012.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.27-9.907c-.4-.2-2.363-1.163-2.73-1.297-.366-.133-.633-.2-.9.2-.266.4-1.033 1.297-1.266 1.563-.233.267-.467.3-.867.1-.4-.2-1.687-.62-3.213-1.973-1.187-1.053-1.987-2.353-2.22-2.753-.233-.4-.025-.617.175-.817.18-.18.4-.467.6-.7.2-.233.267-.4.4-.667.133-.267.067-.5-.033-.7-.1-.2-.9-2.167-1.233-2.967-.324-.78-.653-.673-.9-.686l-.767-.013c-.267 0-.7.1-1.067.5-.366.4-1.4 1.367-1.4 3.333s1.433 3.867 1.633 4.133c.2.267 2.82 4.307 6.833 6.04.954.413 1.7.66 2.28.843.958.305 1.83.262 2.52.16.768-.115 2.363-.967 2.697-1.9.333-.933.333-1.733.233-1.9-.1-.167-.366-.267-.766-.467z"/>
-    </svg>
-    <span class="wa-float-label">Jetzt anfragen</span>
-  </a>
 
   <script src="main.js"></script>
 </body>

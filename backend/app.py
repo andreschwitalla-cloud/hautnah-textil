@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import requests as http
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
-from database import init_db, get_db
-from whatsapp import parse_webhook, sende_nachricht, auto_antwort
+from database import init_db, get_db, formular_speichern
+from whatsapp import parse_webhook, sende_nachricht, verarbeite_nachricht
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'hautnah-dev-key')
@@ -18,33 +19,17 @@ init_db()
 
 @app.route('/webhook', methods=['GET'])
 def webhook_verify():
-    """Meta verifiziert den Webhook mit einem Challenge."""
     if request.args.get('hub.verify_token') == os.getenv('WA_VERIFY_TOKEN'):
         return request.args.get('hub.challenge', ''), 200
     return 'Forbidden', 403
 
 @app.route('/webhook', methods=['POST'])
 def webhook_receive():
-    """Eingehende WhatsApp-Nachrichten empfangen."""
     data = request.get_json(silent=True) or {}
-    nachrichten = parse_webhook(data)
-
-    with get_db() as db:
-        for n in nachrichten:
-            # Speichern
-            db.execute(
-                'INSERT INTO nachrichten (wa_id, name, telefon, nachricht) VALUES (?,?,?,?)',
-                (n['wa_id'], n['name'], n['telefon'], n['nachricht'])
-            )
-            # Auto-Antwort
-            antwort = auto_antwort(n['nachricht'])
-            if antwort:
-                sende_nachricht(n['wa_id'], antwort)
-                db.execute(
-                    'INSERT INTO nachrichten (wa_id, name, telefon, nachricht, typ) VALUES (?,?,?,?,?)',
-                    (n['wa_id'], 'Hautnah Bot', '', antwort, 'ausgehend')
-                )
-
+    msgs = parse_webhook(data)
+    for m in msgs:
+        antwort = verarbeite_nachricht(m['wa_id'], m['name'], m['text'])
+        sende_nachricht(m['wa_id'], antwort)
     return jsonify({'status': 'ok'})
 
 
@@ -70,14 +55,24 @@ def admin_dashboard():
         return redirect(url_for('admin_login'))
     with get_db() as db:
         nachrichten = db.execute(
-            'SELECT * FROM nachrichten ORDER BY erstellt_am DESC LIMIT 100'
+            'SELECT * FROM nachrichten ORDER BY erstellt_am ASC'
+        ).fetchall()
+        namen = dict(db.execute(
+            'SELECT wa_id, name FROM sessions WHERE name IS NOT NULL'
+        ).fetchall())
+        formulare = db.execute(
+            'SELECT * FROM formulare ORDER BY erstellt_am DESC LIMIT 50'
         ).fetchall()
         stats = {
-            'gesamt':      db.execute('SELECT COUNT(*) FROM nachrichten WHERE typ="eingehend"').fetchone()[0],
-            'neu':         db.execute('SELECT COUNT(*) FROM nachrichten WHERE status="neu"').fetchone()[0],
-            'anfragen':    db.execute('SELECT COUNT(*) FROM anfragen').fetchone()[0],
+            'gesamt':   db.execute('SELECT COUNT(*) FROM nachrichten WHERE richtung="eingehend"').fetchone()[0],
+            'neu':      db.execute('SELECT COUNT(*) FROM formulare WHERE status="neu"').fetchone()[0],
+            'anfragen': db.execute('SELECT COUNT(*) FROM formulare').fetchone()[0],
         }
-    return render_template('admin.html', nachrichten=nachrichten, stats=stats)
+    return render_template('admin.html',
+                           nachrichten=nachrichten,
+                           formulare=formulare,
+                           stats=stats,
+                           namen=namen)
 
 @app.route('/admin/antworten', methods=['POST'])
 def admin_antworten():
@@ -88,14 +83,18 @@ def admin_antworten():
     if not wa_id or not text:
         return jsonify({'ok': False, 'error': 'Fehlende Parameter'})
     ok = sende_nachricht(wa_id, text)
-    if ok:
-        with get_db() as db:
-            db.execute(
-                'INSERT INTO nachrichten (wa_id, name, telefon, nachricht, typ, status) VALUES (?,?,?,?,?,?)',
-                (wa_id, 'Hautnah Textil', '', text, 'ausgehend', 'gesendet')
-            )
-            db.execute('UPDATE nachrichten SET status="beantwortet" WHERE wa_id=? AND typ="eingehend"', (wa_id,))
     return jsonify({'ok': ok})
+
+@app.route('/admin/formular/<int:fid>/status', methods=['POST'])
+def formular_status(fid):
+    if not session.get('admin'):
+        return jsonify({'ok': False}), 401
+    status = request.json.get('status')
+    if status not in ('neu', 'gelesen', 'erledigt'):
+        return jsonify({'ok': False})
+    with get_db() as db:
+        db.execute('UPDATE formulare SET status=? WHERE id=?', (status, fid))
+    return jsonify({'ok': True})
 
 @app.route('/admin/nachrichten')
 def admin_nachrichten_api():
@@ -103,9 +102,80 @@ def admin_nachrichten_api():
         return jsonify({'ok': False}), 401
     with get_db() as db:
         rows = db.execute(
-            'SELECT * FROM nachrichten ORDER BY erstellt_am DESC LIMIT 50'
+            'SELECT * FROM nachrichten ORDER BY erstellt_am DESC LIMIT 100'
         ).fetchall()
     return jsonify([dict(r) for r in rows])
+
+
+# ── Website Kontaktformular ───────────────────────────────────────────────────
+
+@app.after_request
+def cors(response):
+    response.headers['Access-Control-Allow-Origin']  = os.getenv('CORS_ORIGIN', 'https://hautnah-textil.de')
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+    return response
+
+@app.route('/api/kontakt', methods=['POST', 'OPTIONS'])
+def api_kontakt():
+    if request.method == 'OPTIONS':
+        return '', 204
+
+    data      = request.get_json(silent=True) or {}
+    kategorie = data.get('kategorie', 'nachricht')
+    name      = data.get('vereinsname') or data.get('name') or '–'
+    email_von = data.get('email', '')
+
+    # quelle markieren damit im Dashboard klar ist: Website vs. WhatsApp
+    data['quelle'] = 'website'
+
+    formular_speichern(wa_id='web', name=name, typ=kategorie, data=data)
+    _email_benachrichtigung(kategorie, name, email_von, data)
+
+    return jsonify({'ok': True})
+
+
+def _email_benachrichtigung(kategorie: str, name: str, email_von: str, data: dict):
+    api_key = os.getenv('RESEND_API_KEY')
+    if not api_key:
+        app.logger.warning('Email-Versand übersprungen: RESEND_API_KEY nicht gesetzt.')
+        return
+
+    skip   = {'kategorie', 'quelle'}
+    zeilen = [f'Neue Anfrage über hautnah-textil.de', f'Kategorie: {kategorie.upper()}', '']
+    for k, v in data.items():
+        if k in skip:
+            continue
+        if isinstance(v, list):
+            zeilen.append(f'{k}:')
+            for item in v:
+                if isinstance(item, dict):
+                    zeilen.append('  ' + '  |  '.join(f'{ik}: {iv}' for ik, iv in item.items() if iv))
+                else:
+                    zeilen.append(f'  {item}')
+        elif v:
+            zeilen.append(f'{k}: {v}')
+
+    payload = {
+        'from':    'Hautnah Textil <noreply@hautnah-textil.de>',
+        'to':      [os.getenv('RESEND_TO', 'hautnah-textil@gmx.de')],
+        'subject': f'Neue Anfrage – {kategorie.capitalize()} – {name}',
+        'text':    '\n'.join(zeilen),
+    }
+    if email_von:
+        payload['reply_to'] = email_von
+
+    try:
+        r = http.post(
+            'https://api.resend.com/emails',
+            headers={'Authorization': f'Bearer {api_key}'},
+            json=payload,
+            timeout=8
+        )
+        if not r.ok:
+            app.logger.error(f'Resend Fehler {r.status_code}: {r.text}')
+    except Exception as e:
+        app.logger.error(f'Resend Exception: {e}')
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

@@ -11,6 +11,11 @@ ingress:
     path: /webhook
     service: http://localhost:5003
 
+  # Website Kontaktformular
+  - hostname: hautnah-textil.de
+    path: /api
+    service: http://localhost:5003
+
   # Admin Dashboard
   - hostname: hautnah-textil.de
     path: /admin
