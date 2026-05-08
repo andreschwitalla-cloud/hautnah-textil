@@ -476,7 +476,30 @@ ul { list-style: none; }
   font-size: 16px;
   color: rgba(255,255,255,.65);
   line-height: 1.75;
+  margin-bottom: 28px;
+}
+.stanno-vorteile {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 32px;
+}
+.stanno-vorteil {
+  font-size: 14px;
+  color: rgba(255,255,255,.8);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+.stanno-vorteil::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
 }
 
 .stanno-grid {
