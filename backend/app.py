@@ -5,6 +5,8 @@ load_dotenv()
 
 import os
 import json
+import time
+from collections import defaultdict
 import requests as http
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from database import init_db, get_db, formular_speichern
@@ -14,6 +16,18 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'hautnah-dev-key')
 
 init_db()
+
+# ── Einfaches In-Memory Rate-Limiting ────────────────────────────────────────
+_login_attempts: dict = defaultdict(list)  # ip → [timestamps]
+
+def _rate_ok(ip: str, max_versuche: int = 10, fenster: int = 300) -> bool:
+    jetzt = time.time()
+    versuche = [t for t in _login_attempts[ip] if jetzt - t < fenster]
+    _login_attempts[ip] = versuche
+    if len(versuche) >= max_versuche:
+        return False
+    _login_attempts[ip].append(jetzt)
+    return True
 
 
 # ── WhatsApp Webhook ──────────────────────────────────────────────────────────
@@ -39,6 +53,9 @@ def webhook_receive():
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
+        ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+        if not _rate_ok(ip):
+            return render_template('login.html', fehler='Zu viele Versuche. Bitte 5 Minuten warten.')
         if request.form.get('passwort') == os.getenv('ADMIN_PASSWORD', 'hautnah2025'):
             session['admin'] = True
             return redirect(url_for('admin_dashboard'))
@@ -55,8 +72,11 @@ def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
     with get_db() as db:
+        # Auto-Clean: Einträge im Papierkorb die älter als 30 Tage sind löschen
+        db.execute("DELETE FROM formulare_geloescht WHERE geloescht_am < datetime('now','-30 days','localtime')")
+
         nachrichten = db.execute(
-            'SELECT * FROM nachrichten ORDER BY erstellt_am ASC'
+            'SELECT * FROM nachrichten ORDER BY erstellt_am ASC LIMIT 500'
         ).fetchall()
         namen = dict(db.execute(
             'SELECT wa_id, name FROM sessions WHERE name IS NOT NULL'
@@ -85,19 +105,28 @@ def admin_dashboard():
             {'typ': r['typ'], 'cnt': r['cnt'], 'pct': int(r['cnt'] / max_cnt * 100)}
             for r in typ_rows
         ]
+        papierkorb_rows = db.execute(
+            'SELECT * FROM formulare_geloescht ORDER BY geloescht_am DESC'
+        ).fetchall()
+        papierkorb = []
+        for r in papierkorb_rows:
+            fd = dict(r)
+            fd['daten'] = json.loads(fd['data'] or '{}')
+            papierkorb.append(fd)
     return render_template('admin.html',
                            nachrichten=nachrichten,
                            formulare=formulare,
                            stats=stats,
                            namen=namen,
-                           typ_stats=typ_stats)
+                           typ_stats=typ_stats,
+                           papierkorb=papierkorb)
 
 @app.route('/admin/antworten', methods=['POST'])
 def admin_antworten():
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
-    wa_id = request.json.get('wa_id')
-    text  = request.json.get('text')
+    wa_id = (request.json or {}).get('wa_id')
+    text  = (request.json or {}).get('text')
     if not wa_id or not text:
         return jsonify({'ok': False, 'error': 'Fehlende Parameter'})
     ok = sende_nachricht(wa_id, text)
@@ -107,8 +136,8 @@ def admin_antworten():
 def formular_status(fid):
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
-    status = request.json.get('status')
-    if status not in ('neu', 'gelesen', 'erledigt'):
+    status = (request.json or {}).get('status')
+    if status not in ('neu', 'gelesen', 'erledigt', 'beantwortet'):
         return jsonify({'ok': False})
     with get_db() as db:
         db.execute('UPDATE formulare SET status=? WHERE id=?', (status, fid))
@@ -145,6 +174,22 @@ def admin_anfrage_antworten(fid):
     api_key = os.getenv('RESEND_API_KEY')
     if not api_key:
         return jsonify({'ok': False, 'error': 'RESEND_API_KEY fehlt'})
+
+    SIGNATUR = (
+        '\n\n'
+        'Mit freundlichen Grüßen\n'
+        'Das Team von Hautnah Textil\n\n'
+        '──────────────────────────\n'
+        'Hautnah Textil\n'
+        'E-Mail: hautnah-textil@gmx.de\n'
+        'Web: www.hautnah-textil.de\n'
+        '──────────────────────────\n'
+        'Bitte antworten Sie nicht direkt auf diese E-Mail.\n'
+        'Für Rückfragen erreichen Sie uns unter hautnah-textil@gmx.de'
+    )
+    if 'hautnah-textil@gmx.de' not in text:
+        text = text + SIGNATUR
+
     payload = {
         'from':     'Hautnah Textil <noreply@hautnah-textil.de>',
         'to':       [email_to],
@@ -166,8 +211,58 @@ def admin_anfrage_antworten(fid):
         app.logger.error(f'Resend Exception: {e}')
         return jsonify({'ok': False, 'error': str(e)})
     with get_db() as db:
-        db.execute("UPDATE formulare SET status='erledigt' WHERE id=?", (fid,))
+        db.execute(
+            "UPDATE formulare SET status='beantwortet', antwort=?, beantwortet_am=datetime('now','localtime') WHERE id=?",
+            (text, fid)
+        )
     return jsonify({'ok': True})
+
+@app.route('/admin/anfrage/<int:fid>/loeschen', methods=['POST'])
+def admin_anfrage_loeschen(fid):
+    if not session.get('admin'):
+        return jsonify({'ok': False}), 401
+    with get_db() as db:
+        row = db.execute('SELECT * FROM formulare WHERE id=?', (fid,)).fetchone()
+        if not row:
+            return jsonify({'ok': False, 'error': 'Nicht gefunden'}), 404
+        db.execute(
+            'INSERT INTO formulare_geloescht (id, wa_id, name, typ, data, status, erstellt_am) '
+            'VALUES (?,?,?,?,?,?,?)',
+            (row['id'], row['wa_id'], row['name'], row['typ'],
+             row['data'], row['status'], row['erstellt_am'])
+        )
+        db.execute('DELETE FROM formulare WHERE id=?', (fid,))
+    return jsonify({'ok': True})
+
+@app.route('/admin/papierkorb/<int:fid>')
+def admin_papierkorb_detail(fid):
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    with get_db() as db:
+        row = db.execute('SELECT * FROM formulare_geloescht WHERE id=?', (fid,)).fetchone()
+    if not row:
+        return 'Nicht gefunden', 404
+    f = dict(row)
+    f['daten'] = json.loads(f['data'] or '{}')
+    return render_template('admin_detail.html', f=f, papierkorb=True)
+
+@app.route('/admin/papierkorb/leeren', methods=['POST'])
+def admin_papierkorb_leeren():
+    if not session.get('admin'):
+        return jsonify({'ok': False}), 401
+    with get_db() as db:
+        db.execute('DELETE FROM formulare_geloescht')
+    return jsonify({'ok': True})
+
+@app.route('/admin/ping')
+def admin_ping():
+    if not session.get('admin'):
+        return jsonify({'ok': False}), 401
+    with get_db() as db:
+        neu   = db.execute('SELECT COUNT(*) FROM formulare WHERE status="neu"').fetchone()[0]
+        total = db.execute('SELECT COUNT(*) FROM formulare').fetchone()[0]
+        wa    = db.execute('SELECT COUNT(*) FROM nachrichten').fetchone()[0]
+    return jsonify({'neu': neu, 'total': total, 'wa': wa})
 
 @app.route('/admin/nachrichten')
 def admin_nachrichten_api():
@@ -198,6 +293,19 @@ def api_kontakt():
         return '', 204
 
     data      = request.get_json(silent=True) or {}
+
+    # Bot-Schutz: Honeypot-Feld muss leer sein
+    if data.get('website', ''):
+        return jsonify({'ok': True})  # still 200 so bots don't retry
+
+    # Bot-Schutz: Formular muss mind. 4 Sekunden offen gewesen sein
+    try:
+        t_geladen = int(data.get('_t', 0))
+        if t_geladen and (time.time() * 1000 - t_geladen) < 4000:
+            return jsonify({'ok': True})
+    except (ValueError, TypeError):
+        pass
+
     kategorie = data.get('kategorie', 'nachricht')
     name      = data.get('vereinsname') or data.get('name') or '–'
     email_von = data.get('email', '')

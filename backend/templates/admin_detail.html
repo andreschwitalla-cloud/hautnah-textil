@@ -35,9 +35,14 @@
     .back-btn:hover { background: var(--bg); }
     .detail-title { font-size: 16px; font-weight: 600; flex: 1; }
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-    .sb-neu      { background: #E0F8F8; color: #007A7E; }
-    .sb-gelesen  { background: #FEF3CD; color: #854F0B; }
-    .sb-erledigt { background: #E8F5E1; color: #3A7A1A; }
+    .sb-neu          { background: #E0F8F8; color: #007A7E; }
+    .sb-gelesen      { background: #FEF3CD; color: #854F0B; }
+    .sb-erledigt     { background: #E8F5E1; color: #3A7A1A; }
+    .sb-beantwortet  { background: #EDE9FE; color: #5B21B6; }
+    .antwort-box { background: #F5F3FF; border: 0.5px solid #DDD6FE; border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 12px; }
+    .antwort-label { font-size: 11px; font-weight: 600; color: #5B21B6; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .antwort-meta { font-size: 11px; color: #7C3AED; margin-bottom: 8px; }
+    .antwort-text { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
 
     .status-select { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 5px 10px; font-size: 12px; font-family: inherit; background: var(--white); cursor: pointer; }
 
@@ -84,19 +89,30 @@
     .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
     .reply-success { font-size: 13px; color: #0F6E56; background: #E1F5EE; padding: 8px 14px; border-radius: var(--radius); display: none; }
     .reply-error { font-size: 13px; color: #A32D2D; background: #FCEBEB; padding: 8px 14px; border-radius: var(--radius); display: none; }
+    .btn-danger { padding: 8px 16px; border-radius: var(--radius); font-size: 13px; border: 0.5px solid #FECACA; background: transparent; color: #A32D2D; cursor: pointer; font-family: inherit; margin-right: auto; }
+    .btn-danger:hover { background: #FCEBEB; }
   </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-logo">HAUT<span>NAH</span><small>ADMIN</small></div>
+  <div class="topbar-logo">
+    <img src="/static/logo-weiss.png" alt="Hautnah Textil" style="height:28px;filter:brightness(1.8);vertical-align:middle;">
+    <small>ADMIN</small>
+  </div>
   <a href="/admin/logout" class="topbar-logout">Abmelden</a>
 </div>
 
 <div class="main">
 
+  {% if papierkorb %}
+  <div style="background:#FEF3CD;border:0.5px solid #FCD34D;border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:13px;color:#854F0B;">
+    Diese Anfrage befindet sich im Papierkorb und wird nach 30 Tagen automatisch gelöscht.
+  </div>
+  {% endif %}
+
   <div class="detail-header">
-    <a href="/admin" class="back-btn">← Zurück</a>
+    <a href="{% if papierkorb %}/admin#papierkorb{% else %}/admin{% endif %}" class="back-btn">← Zurück</a>
     <span class="detail-title">
       Anfrage #{{ f.id }} –
       {% if f.typ == 'bestellung' %}Bestellung
@@ -110,11 +126,13 @@
     <span class="status-badge sb-{{ f.status }}">
       {% if f.status == 'neu' %}● Neu
       {% elif f.status == 'gelesen' %}● Offen
+      {% elif f.status == 'beantwortet' %}● Beantwortet
       {% else %}● Erledigt{% endif %}
     </span>
     <select class="status-select" id="statusSelect" onchange="aktualisiereStatus(this.value)">
       <option value="neu" {% if f.status == 'neu' %}selected{% endif %}>Neu</option>
       <option value="gelesen" {% if f.status == 'gelesen' %}selected{% endif %}>Offen</option>
+      <option value="beantwortet" {% if f.status == 'beantwortet' %}selected{% endif %}>Beantwortet</option>
       <option value="erledigt" {% if f.status == 'erledigt' %}selected{% endif %}>Erledigt</option>
     </select>
   </div>
@@ -231,21 +249,59 @@
   </div>
   {% endif %}
 
-  <div class="reply-card">
+  {% if not papierkorb and f.antwort %}
+  <div class="antwort-box" id="antwortBox">
+    <div class="antwort-label">Gesendete Antwort</div>
+    {% if f.beantwortet_am %}
+    <div class="antwort-meta">Gesendet am {{ f.beantwortet_am[:16] }} · per E-Mail an {{ f.daten.get('email', '–') }}</div>
+    {% endif %}
+    <div class="antwort-text">{{ f.antwort }}</div>
+  </div>
+  {% endif %}
+
+  {% if not papierkorb %}
+  <div class="reply-card" id="replyCard">
     <div class="card-title">Antwort per E-Mail{% if f.daten.get('email') %} an {{ f.daten.get('email') }}{% endif %}</div>
     <textarea class="reply-textarea" id="replyText" placeholder="Antwort schreiben …"></textarea>
     <div class="reply-actions">
+      <button class="btn-danger" onclick="anfrageLoschen()">Löschen</button>
       <span class="reply-success" id="replySuccess">Gesendet und als erledigt markiert.</span>
       <span class="reply-error" id="replyError">Fehler beim Senden.</span>
       <button class="btn-secondary" onclick="nurErledigen()">Nur als erledigt markieren</button>
       <button class="btn-primary" id="sendBtn" onclick="sendeAntwort()">Senden</button>
     </div>
   </div>
+  {% endif %}
 
 </div>
 
 <script>
 const FID = {{ f.id }};
+const KUNDENNAME = {{ (f.name or '')|tojson }};
+
+const SIGNATUR = `\n\nMit freundlichen Grüßen\nDas Team von Hautnah Textil\n\n──────────────────────────\nHautnah Textil\nE-Mail: hautnah-textil@gmx.de\nWeb: www.hautnah-textil.de\n──────────────────────────\nBitte antworten Sie nicht direkt auf diese E-Mail.\nFür Rückfragen erreichen Sie uns unter hautnah-textil@gmx.de`;
+
+function anredeZeile() {
+  const name = KUNDENNAME.trim();
+  return name ? `Guten Tag ${name},\n\n` : `Guten Tag,\n\n`;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('replyText');
+  ta.value = anredeZeile() + SIGNATUR;
+  ta.setSelectionRange(anredeZeile().length, anredeZeile().length);
+});
+
+async function anfrageLoschen() {
+  if (!confirm('Anfrage #' + FID + ' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+  const r = await fetch(`/admin/anfrage/${FID}/loeschen`, {method: 'POST'});
+  const d = await r.json();
+  if (d.ok) {
+    window.location = '/admin';
+  } else {
+    alert('Löschen fehlgeschlagen.');
+  }
+}
 
 async function aktualisiereStatus(status) {
   await fetch(`/admin/formular/${FID}/status`, {
@@ -278,9 +334,18 @@ async function sendeAntwort() {
   });
   const d = await r.json();
   if (d.ok) {
+    const jetzt = new Date().toISOString().slice(0,16).replace('T',' ');
+    const email = {{ (f.daten.get('email', '')|default(''))|tojson }};
+    const antwortHtml = `
+      <div class="antwort-box" id="antwortBox">
+        <div class="antwort-label">Gesendete Antwort</div>
+        <div class="antwort-meta">Gesendet am ${jetzt} · per E-Mail an ${email}</div>
+        <div class="antwort-text">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
+      </div>`;
+    document.getElementById('replyCard').insertAdjacentHTML('beforebegin', antwortHtml);
     document.getElementById('replySuccess').style.display = 'block';
     document.getElementById('replyText').value = '';
-    document.getElementById('statusSelect').value = 'erledigt';
+    document.getElementById('statusSelect').value = 'beantwortet';
     btn.textContent = 'Gesendet';
   } else {
     document.getElementById('replyError').style.display = 'block';

@@ -54,8 +54,8 @@ const kategorienConfig = {
     nachrichtPlaceholder: 'Beschreibt das Problem so genau wie möglich.'
   },
   rueckruf: {
-    felder: ['fg-vereinsname', 'fg-telefon', 'fg-rueckruf_zeit', 'fg-nachricht'],
-    pflicht: ['inp-vereinsname', 'inp-telefon'],
+    felder: ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-rueckruf_zeit', 'fg-nachricht'],
+    pflicht: ['inp-vereinsname', 'inp-email', 'inp-telefon'],
     nachrichtPlaceholder: 'Worum geht es? (optional)'
   },
   nachricht: {
@@ -97,6 +97,7 @@ document.querySelectorAll('.kat-btn').forEach(btn => {
     });
 
     document.getElementById('formKategorie').value = kat;
+    document.getElementById('formTimestamp').value = Date.now();
     document.getElementById('kontaktForm').classList.add('aktiv');
   });
 });
