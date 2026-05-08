@@ -551,33 +551,43 @@ textarea { resize: vertical; }
 .footer-links a:hover { color: var(--white); }
 .footer-copy { font-size: 13px; color: rgba(255,255,255,.35); }
 
-/* ── WhatsApp Float Button ─────────────────────────────────────────────────── */
+/* ── WhatsApp Side Tab ─────────────────────────────────────────────────────── */
 .wa-float {
   position: fixed;
-  right: 24px;
-  bottom: 28px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 999;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: #25D366;
   color: #fff;
-  padding: 13px 20px 13px 16px;
-  border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(37,211,102,.4);
+  padding: 20px 14px;
+  border-radius: 8px 0 0 8px;
+  box-shadow: -4px 0 24px rgba(37,211,102,.35);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   text-decoration: none;
-  transition: transform .2s, box-shadow .2s;
+  transition: padding .2s, box-shadow .2s;
 }
 .wa-float:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(37,211,102,.5);
+  padding: 20px 18px;
+  box-shadow: -6px 0 32px rgba(37,211,102,.5);
 }
-.wa-float-label { white-space: nowrap; }
+.wa-float svg { flex-shrink: 0; }
+.wa-float-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: .9;
+}
 
 @media (max-width: 480px) {
-  .wa-float { padding: 13px; border-radius: 4px; }
+  .wa-float { padding: 16px 10px; gap: 8px; }
   .wa-float-label { display: none; }
 }
 
