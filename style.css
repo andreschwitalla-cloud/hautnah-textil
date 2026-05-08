@@ -197,7 +197,7 @@ ul { list-style: none; }
   margin-bottom: 24px;
 }
 .hero-logo-img {
-  width: clamp(280px, 45vw, 560px);
+  width: clamp(160px, 45vw, 560px);
   height: auto;
   display: block;
 }
