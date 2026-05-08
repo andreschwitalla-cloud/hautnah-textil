@@ -507,11 +507,14 @@ ul { list-style: none; }
 }
 
 @media (max-width: 768px) {
+  .stanno-banner { padding: 56px 20px; }
+  .stanno-banner-content h2 { font-size: 28px; }
   .stanno-grid { grid-template-columns: repeat(2, 1fr); }
-  .stanno-item-img { height: 200px; }
+  .stanno-item-img { height: 180px; }
 }
 @media (max-width: 480px) {
   .stanno-grid { grid-template-columns: 1fr 1fr; }
+  .stanno-item-img { height: 140px; }
 }
 
 /* ── Ablauf ────────────────────────────────────────────────────────────────── */
@@ -742,11 +745,14 @@ textarea { resize: vertical; }
   .hero-sub { margin: 0 auto 36px; }
   .hero-cta { justify-content: center; }
   .hero-visual { order: -1; width: 100%; }
-  .hero-stats { flex-direction: row; justify-content: center; }
+  .hero-stats { flex-direction: row; }
+  .hero-stat { flex: 1; padding: 16px 12px; }
+  .hero-divider { width: 1px; height: auto; }
+  .stat-num { font-size: 24px; }
+  .stat-label { font-size: 10px; }
 
   .galerie-grid { grid-template-columns: 1fr; height: auto; }
-  .galerie-bild { height: 220px; }
-  .galerie-bild--2, .galerie-bild--3 { display: none; }
+  .galerie-bild { height: 220px; display: block !important; }
 
   .steps { flex-direction: column; align-items: center; }
   .step { max-width: 100%; text-align: center; }
@@ -761,5 +767,6 @@ textarea { resize: vertical; }
 @media (max-width: 480px) {
   .hero-cta { flex-direction: column; }
   .btn-primary, .btn-ghost { width: 100%; text-align: center; }
-  .hero-stats { flex-direction: column; width: 100%; }
+  .hero-stats { width: 100%; }
+  .kontakt-infos { align-items: center; }
 }
