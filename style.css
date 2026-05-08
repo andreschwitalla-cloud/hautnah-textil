@@ -1,12 +1,9 @@
 /* ── Intro Splash ──────────────────────────────────────────────────────────── */
 .intro {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   z-index: 9999;
   background: #111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   pointer-events: none;
 }
@@ -14,26 +11,27 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  /* Cover ohne object-fit: 16:9-Video immer vollflächig zentriert */
   width: 100vw;
-  height: 56.25vw;   /* 100vw / 16 * 9 */
+  height: 56.25vw;
   min-height: 100vh;
-  min-width: 177.78vh; /* 100vh / 9 * 16 */
+  min-width: 177.78vh;
   transform: translate(-50%, -50%);
   opacity: 0;
   animation: video-in .9s ease .1s forwards;
 }
 .intro-overlay {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,.45);
 }
 .intro-logo-img {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 16px));
   z-index: 1;
   width: clamp(240px, 50vw, 480px);
   opacity: 0;
-  transform: translateY(16px);
   animation: fade-up .6s cubic-bezier(.22,1,.36,1) .4s forwards;
   filter: brightness(0) invert(1);
 }
@@ -41,18 +39,14 @@
   animation: iris-close .7s cubic-bezier(.4,0,.6,1) forwards;
 }
 @keyframes video-in   { to { opacity: 1; } }
-@keyframes fade-up    { to { opacity: 1; transform: translateY(0); } }
+@keyframes fade-up    { to { opacity: 1; transform: translate(-50%, -50%); } }
 @keyframes iris-close {
   from { clip-path: circle(150% at 50% 50%); }
   to   { clip-path: circle(0%   at 50% 50%); }
 }
 @media (max-width: 768px) {
-  .intro-logo-img {
-    width: clamp(180px, 70vw, 300px);
-  }
-  .intro-overlay {
-    background: rgba(0,0,0,.55);
-  }
+  .intro-logo-img { width: clamp(180px, 70vw, 300px); }
+  .intro-overlay  { background: rgba(0,0,0,.55); }
 }
 
 /* ── Hero Animations ───────────────────────────────────────────────────────── */
