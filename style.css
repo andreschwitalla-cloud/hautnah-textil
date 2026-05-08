@@ -337,15 +337,15 @@ ul { list-style: none; }
 }
 .galerie-bild--1 {
   background-color: var(--anthrazit);
-  background-image: url('assets/foto-1.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Trikots.webp');
+  background-image: url('assets/foto-1.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Stanno-F_r-Vereine-Hero-Banner-Mobile.webp');
 }
 .galerie-bild--2 {
   background-color: #2a3540;
-  background-image: url('assets/foto-2.jpg'), url('https://source.unsplash.com/600x840/?football,training,players');
+  background-image: url('assets/foto-2.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Trikots.webp');
 }
 .galerie-bild--3 {
   background-color: #1a2830;
-  background-image: url('assets/foto-3.jpg'), url('https://source.unsplash.com/600x840/?football,team,soccer');
+  background-image: url('assets/foto-3.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Design_ohne_Titel-17.png');
 }
 .galerie-overlay {
   position: absolute;
@@ -380,44 +380,75 @@ ul { list-style: none; }
 .usp h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
 .usp p { font-size: 14px; color: var(--muted); line-height: 1.65; }
 
-/* ── Partner ───────────────────────────────────────────────────────────────── */
-.partner {
-  padding: 64px 24px;
-  background: var(--off);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+/* ── Stanno Partner ────────────────────────────────────────────────────────── */
+.stanno { background: var(--anthrazit); }
+
+.stanno-banner {
+  position: relative;
+  padding: 80px 24px;
+  overflow: hidden;
+  color: var(--white);
 }
-.partner-inner {
-  display: flex;
-  align-items: center;
-  gap: 48px;
-  flex-wrap: wrap;
+.stanno-banner-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Stanno-F_r-Vereine-Hero-Banner-Mobile.webp');
+  background-size: cover;
+  background-position: center;
+  opacity: .25;
 }
-.partner-label {
-  font-size: 11px;
+.stanno-banner-content {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+}
+.stanno-banner-content h2 {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  letter-spacing: -.5px;
+  margin: 12px 0 16px;
+  color: var(--white);
+}
+.stanno-banner-content p {
+  font-size: 16px;
+  color: rgba(255,255,255,.65);
+  line-height: 1.75;
+  margin-bottom: 32px;
+}
+
+.stanno-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  padding-top: 3px;
+}
+.stanno-item { position: relative; overflow: hidden; }
+.stanno-item-img {
+  height: 280px;
+  background-size: cover;
+  background-position: center;
+  background-color: #2a2c2e;
+  transition: transform .4s;
+}
+.stanno-item:hover .stanno-item-img { transform: scale(1.05); }
+.stanno-item-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 16px 14px;
+  background: linear-gradient(to top, rgba(0,0,0,.75), transparent);
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 2.5px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--muted);
-  flex: 0 0 100%;
-  margin-bottom: -24px;
-}
-.partner-logo {
-  height: 80px;
-  width: auto;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-.partner-text {
-  font-size: 15px;
-  color: var(--muted);
-  line-height: 1.7;
-  max-width: 560px;
+  color: rgba(255,255,255,.85);
 }
 
 @media (max-width: 768px) {
-  .partner-inner { flex-direction: column; text-align: center; gap: 24px; }
-  .partner-label { margin-bottom: 0; }
+  .stanno-grid { grid-template-columns: repeat(2, 1fr); }
+  .stanno-item-img { height: 200px; }
+}
+@media (max-width: 480px) {
+  .stanno-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ── Ablauf ────────────────────────────────────────────────────────────────── */
