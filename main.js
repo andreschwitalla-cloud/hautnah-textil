@@ -1,9 +1,14 @@
-// Intro entfernen nach Animation
+// Intro: 2.5s stehen lassen, dann wegfaden, dann Hero einblenden
 const intro = document.getElementById('intro');
 if (intro) {
-  intro.addEventListener('animationend', (e) => {
-    if (e.animationName === 'intro-exit') intro.remove();
-  });
+  setTimeout(() => {
+    intro.style.opacity = '0';
+    intro.style.transform = 'translateY(-8px)';
+    setTimeout(() => {
+      intro.remove();
+      document.querySelectorAll('.anim-up').forEach(el => el.classList.add('visible'));
+    }, 600);
+  }, 2500);
 }
 
 // Nav scroll shadow

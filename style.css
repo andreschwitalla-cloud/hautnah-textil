@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  animation: intro-exit .6s ease-in-out 2.8s forwards;
+  transition: opacity .6s ease, transform .6s ease;
   pointer-events: none;
 }
 .intro-logo {
@@ -49,16 +49,16 @@
 @keyframes slide-right { to { transform: translateX(0); } }
 @keyframes slide-left  { to { transform: translateX(0); } }
 @keyframes fade-in     { to { opacity: 1; } }
-@keyframes intro-exit  { to { opacity: 0; transform: translateY(-6px); pointer-events: none; } }
 
 /* ── Hero Animations ───────────────────────────────────────────────────────── */
 .anim-up {
   opacity: 0;
-  transform: translateY(24px);
-  animation: anim-up-in .6s cubic-bezier(.22,1,.36,1) calc(2.8s + var(--d, 0s)) forwards;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s cubic-bezier(.22,1,.36,1);
 }
-@keyframes anim-up-in {
-  to { opacity: 1; transform: translateY(0); }
+.anim-up.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Reset & Base ──────────────────────────────────────────────────────────── */
