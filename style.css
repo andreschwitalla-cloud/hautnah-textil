@@ -630,6 +630,7 @@ textarea { resize: vertical; }
   gap: 8px;
   margin-bottom: 8px;
 }
+.inp-menge { width: 90px; }
 .btn-add-row {
   width: 100%;
   padding: 9px 14px;
@@ -771,7 +772,9 @@ textarea { resize: vertical; }
 
   .form-row { grid-template-columns: 1fr; }
   .kategorie-picker { grid-template-columns: 1fr 1fr; }
+  .kat-btn { text-align: center; }
   .artikel-row { grid-template-columns: 1fr; }
+  .inp-menge { width: 100%; }
   .kontakt-infos { flex-direction: column; align-items: center; gap: 12px; }
 
   .footer-inner { flex-direction: column; text-align: center; }
@@ -782,4 +785,5 @@ textarea { resize: vertical; }
   .btn-primary, .btn-ghost { width: 100%; text-align: center; }
   .hero-stats { width: 100%; }
   .kontakt-infos { align-items: center; }
+  .kategorie-picker { grid-template-columns: 1fr; }
 }

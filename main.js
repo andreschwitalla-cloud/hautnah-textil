@@ -107,7 +107,7 @@ if (addRowBtn) {
   addRowBtn.addEventListener('click', () => {
     const row = document.createElement('div');
     row.className = 'artikel-row';
-    row.innerHTML = '<input type="text" name="artikel[]" placeholder="Artikel"><input type="number" name="menge[]" placeholder="Stück" min="1" style="width:90px">';
+    row.innerHTML = '<input type="text" name="artikel[]" placeholder="Artikel"><input type="number" name="menge[]" placeholder="Stück" min="1" class="inp-menge">';
     document.getElementById('artikelListe').appendChild(row);
   });
 }
