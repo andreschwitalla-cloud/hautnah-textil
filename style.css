@@ -753,7 +753,7 @@ textarea { resize: vertical; }
     gap: 40px;
   }
   .hero-wordmark { justify-content: center; }
-  .hero-logo-img { width: 38vw; max-width: 140px; }
+  .hero-logo-img { width: 55vw; max-width: 220px; }
   .hw-haut, .hw-nah { font-size: clamp(60px, 18vw, 100px); letter-spacing: -3px; }
   .hero-sub { margin: 0 auto 36px; }
   .hero-cta { justify-content: center; }
