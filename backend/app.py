@@ -111,7 +111,10 @@ def admin_nachrichten_api():
 
 @app.after_request
 def cors(response):
-    response.headers['Access-Control-Allow-Origin']  = os.getenv('CORS_ORIGIN', 'https://hautnah-textil.de')
+    origin = request.headers.get('Origin', '')
+    allowed = {os.getenv('CORS_ORIGIN', 'https://hautnah-textil.de'), 'https://www.hautnah-textil.de'}
+    if origin in allowed:
+        response.headers['Access-Control-Allow-Origin'] = origin
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
     return response

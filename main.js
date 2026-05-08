@@ -30,7 +30,7 @@ mobileMenu.querySelectorAll('a').forEach(a => {
 // ── Kontakt Smart Form ────────────────────────────────────────────────────────
 
 // Backend-Endpunkt: speichert im Dashboard-DB, sendet Email parallel
-const KONTAKT_ENDPOINT = 'https://hautnah-textil.de/api/kontakt';
+const KONTAKT_ENDPOINT = 'https://api.hautnah-textil.de/api/kontakt';
 
 const kategorienConfig = {
   bestellung: {

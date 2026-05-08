@@ -1,30 +1,10 @@
-# Cloudflare Tunnel Konfiguration für Hautnah Textil
-# Einrichten: cloudflared tunnel create hautnah
-# Dann: cloudflared tunnel route dns hautnah hautnah-textil.de
-
-tunnel: hautnah          # Name des Tunnels (nach cloudflared tunnel create)
-credentials-file: /Users/andreschwitalla/.cloudflared/hautnah.json
+tunnel: 0765421e-4b14-4177-a16c-d583770715a4
+credentials-file: /Users/andreschwitalla/.cloudflared/0765421e-4b14-4177-a16c-d583770715a4.json
 
 ingress:
-  # WhatsApp Webhook
-  - hostname: hautnah-textil.de
-    path: /webhook
+  # Alle Backend-Routen über api.hautnah-textil.de
+  - hostname: api.hautnah-textil.de
     service: http://localhost:5003
 
-  # Website Kontaktformular
-  - hostname: hautnah-textil.de
-    path: /api
-    service: http://localhost:5003
-
-  # Admin Dashboard
-  - hostname: hautnah-textil.de
-    path: /admin
-    service: http://localhost:5003
-
-  # Health
-  - hostname: hautnah-textil.de
-    path: /health
-    service: http://localhost:5003
-
-  # Alles andere → Cloudflare Pages (statische Homepage)
-  - service: https://hautnah-textil.pages.dev
+  # Fallback
+  - service: http_status:404
