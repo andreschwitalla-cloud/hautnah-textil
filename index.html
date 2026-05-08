@@ -60,46 +60,6 @@
   }
   </script>
 
-  <!-- FAQ Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Wie lange dauert die Lieferung nach der Bestellung?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Nach Auftragsbestätigung und Druckfreigabe liefern wir in der Regel innerhalb von 2–3 Wochen. Bei eiligen Bestellungen sprechen Sie uns auf Expresslieferung an." }
-      },
-      {
-        "@type": "Question",
-        "name": "Gibt es eine Mindestbestellmenge?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Für Trikots und Trainingskleidung empfehlen wir ab 5 Stück. Für Vereinsmerchandise gibt es keine feste Mindestmenge." }
-      },
-      {
-        "@type": "Question",
-        "name": "Welche Druckverfahren bietet ihr an?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Wir setzen je nach Textil und Motiv auf Sublimationsdruck, Siebdruck und Transferdruck. Wir beraten Sie zum besten Verfahren." }
-      },
-      {
-        "@type": "Question",
-        "name": "Kann ich als Privatperson bestellen?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Ja, jeder kann bestellen. Wir arbeiten mit Vereinen, Firmen und Privatpersonen zusammen." }
-      },
-      {
-        "@type": "Question",
-        "name": "Bekomme ich vorher eine Druckvorschau?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Ja, vor der Produktion erhalten Sie immer einen digitalen Proof zur Freigabe. Erst nach Ihrer Bestätigung gehen wir in die Fertigung." }
-      },
-      {
-        "@type": "Question",
-        "name": "In welchen Regionen liefert ihr?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Unser Hauptgebiet ist das Ruhrgebiet – Dortmund, Bochum, Essen, Gelsenkirchen, Herne, Recklinghausen. Wir liefern deutschlandweit." }
-      }
-    ]
-  }
-  </script>
-
   <!-- Preload LCP-Bild -->
   <link rel="preload" as="image" href="assets/logo.png">
 
@@ -125,7 +85,6 @@
       <ul class="nav-links">
         <li><a href="#leistungen">Leistungen</a></li>
         <li><a href="#ablauf">Ablauf</a></li>
-        <li><a href="#faq">FAQ</a></li>
         <li><a href="#kontakt">Kontakt</a></li>
         <li><a href="#kontakt" class="btn-nav">Trikots anfragen</a></li>
       </ul>
@@ -136,7 +95,6 @@
     <div class="mobile-menu" id="mobileMenu">
       <a href="#leistungen">Leistungen</a>
       <a href="#ablauf">Ablauf</a>
-      <a href="#faq">FAQ</a>
       <a href="#kontakt">Kontakt</a>
       <a href="#kontakt" class="btn-nav">Trikots anfragen</a>
     </div>
@@ -430,39 +388,6 @@
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="faq-section" id="faq">
-    <div class="container">
-      <h2 class="faq-headline">Häufige Fragen</h2>
-      <div class="faq-list">
-        <details class="faq-item">
-          <summary class="faq-q">Wie lange dauert die Lieferung nach der Bestellung?</summary>
-          <p class="faq-a">Nach Auftragsbestätigung und Druckfreigabe liefern wir in der Regel innerhalb von <strong>2–3 Wochen</strong>. Bei eiligen Bestellungen sprecht uns gerne auf Expresslieferung an – wir finden eine Lösung.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Gibt es eine Mindestbestellmenge?</summary>
-          <p class="faq-a">Für Trikots und Trainingskleidung empfehlen wir ab <strong>5 Stück</strong>, damit sich Druck und Preis lohnen. Für Vereinsmerchandise gibt es keine feste Mindestmenge – fragt einfach an.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Welche Druckverfahren bietet ihr an?</summary>
-          <p class="faq-a">Wir setzen je nach Textil und Motiv auf <strong>Sublimationsdruck</strong>, <strong>Siebdruck</strong> und <strong>Transferdruck</strong>. Bei der Beratung empfehlen wir das beste Verfahren für eure Anforderungen.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Kann ich als Privatperson bestellen – oder nur als Verein?</summary>
-          <p class="faq-a">Jeder kann bei uns bestellen. Wir arbeiten mit Vereinen, Firmen und Privatpersonen zusammen. Vereinsbestellungen erhalten in der Regel bessere Staffelpreise.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Bekomme ich vorher eine Druckvorschau?</summary>
-          <p class="faq-a">Ja – vor der Produktion erhaltet ihr immer einen digitalen <strong>Proof (Druckvorschau)</strong> zur Freigabe. Erst nach eurer Bestätigung gehen wir in die Fertigung.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">In welchen Regionen liefert ihr?</summary>
-          <p class="faq-a">Unser Hauptgebiet ist das <strong>Ruhrgebiet</strong> – Dortmund, Bochum, Essen, Gelsenkirchen, Herne, Recklinghausen und Umgebung. Wir liefern aber deutschlandweit und holen auf Wunsch auch persönlich ab.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-inner">
@@ -470,6 +395,7 @@
         <img src="assets/logo-weiss.png" alt="hautnah Textildruck" class="logo-img logo-img--footer" loading="lazy">
       </div>
       <div class="footer-links">
+        <a href="faq.html">FAQ</a>
         <a href="impressum.html">Impressum</a>
         <a href="datenschutz.html">Datenschutz</a>
       </div>
