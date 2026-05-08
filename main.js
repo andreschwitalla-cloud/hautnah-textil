@@ -1,14 +1,13 @@
-// Intro: 2.5s stehen lassen, dann wegfaden, dann Hero einblenden
+// Intro: 4s zeigen, dann Iris-Close, dann Hero einblenden
 const intro = document.getElementById('intro');
 if (intro) {
   setTimeout(() => {
-    intro.style.opacity = '0';
-    intro.style.transform = 'translateY(-8px)';
+    intro.classList.add('exit');
     setTimeout(() => {
       intro.remove();
       document.querySelectorAll('.anim-up').forEach(el => el.classList.add('visible'));
-    }, 600);
-  }, 2500);
+    }, 700);
+  }, 4000);
 }
 
 // Nav scroll shadow
