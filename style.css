@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  animation: intro-exit .5s ease-in-out 3.2s forwards;
+  animation: intro-exit .5s ease-in-out 2s forwards;
   pointer-events: none;
 }
 .intro-logo {
@@ -55,7 +55,7 @@
 .anim-up {
   opacity: 0;
   transform: translateY(24px);
-  animation: anim-up-in .6s cubic-bezier(.22,1,.36,1) calc(3.2s + var(--d, 0s)) forwards;
+  animation: anim-up-in .6s cubic-bezier(.22,1,.36,1) calc(2s + var(--d, 0s)) forwards;
 }
 @keyframes anim-up-in {
   to { opacity: 1; transform: translateY(0); }
