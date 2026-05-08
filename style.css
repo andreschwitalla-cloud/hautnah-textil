@@ -1,3 +1,66 @@
+/* ── Intro Splash ──────────────────────────────────────────────────────────── */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--anthrazit, #1e2022);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: intro-exit .5s ease-in-out 2s forwards;
+  pointer-events: none;
+}
+.intro-logo {
+  display: flex;
+  overflow: hidden;
+  line-height: 1;
+}
+.intro-haut {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(64px, 14vw, 130px);
+  font-weight: 900;
+  letter-spacing: -4px;
+  color: #fff;
+  transform: translateX(-110%);
+  animation: slide-right .6s cubic-bezier(.22,1,.36,1) .2s forwards;
+}
+.intro-nah {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(64px, 14vw, 130px);
+  font-weight: 900;
+  letter-spacing: -4px;
+  color: #00C2C7;
+  transform: translateX(110%);
+  animation: slide-left .6s cubic-bezier(.22,1,.36,1) .2s forwards;
+}
+.intro-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  opacity: 0;
+  animation: fade-in .4s ease .85s forwards;
+}
+
+@keyframes slide-right { to { transform: translateX(0); } }
+@keyframes slide-left  { to { transform: translateX(0); } }
+@keyframes fade-in     { to { opacity: 1; } }
+@keyframes intro-exit  { to { opacity: 0; transform: translateY(-6px); pointer-events: none; } }
+
+/* ── Hero Animations ───────────────────────────────────────────────────────── */
+.anim-up {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: anim-up-in .6s cubic-bezier(.22,1,.36,1) calc(2s + var(--d, 0s)) forwards;
+}
+@keyframes anim-up-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Reset & Base ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

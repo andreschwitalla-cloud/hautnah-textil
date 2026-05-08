@@ -1,3 +1,9 @@
+// Intro entfernen nach Animation
+const intro = document.getElementById('intro');
+if (intro) {
+  intro.addEventListener('animationend', () => intro.remove(), { once: true });
+}
+
 // Nav scroll shadow
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
