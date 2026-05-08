@@ -539,34 +539,34 @@ ul { list-style: none; }
 
 /* ── Kontakt ───────────────────────────────────────────────────────────────── */
 .kontakt { padding: 96px 24px; }
-.kontakt-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: start;
+.kontakt-kopf {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 40px;
 }
-.kontakt-text .label { margin-bottom: 12px; }
-.kontakt-text h2 {
+.kontakt-kopf .label { margin-bottom: 12px; }
+.kontakt-kopf h2 {
   font-size: clamp(26px, 4vw, 40px);
   font-weight: 800;
   letter-spacing: -.5px;
   margin-bottom: 16px;
   line-height: 1.15;
 }
-.kontakt-text p { color: var(--muted); font-size: 16px; margin-bottom: 32px; line-height: 1.7; }
-.kontakt-infos { display: flex; flex-direction: column; gap: 10px; }
-.kontakt-link {
+.kontakt-kopf p { color: var(--muted); font-size: 16px; line-height: 1.7; }
+.kontakt-infos {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 15px;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.kontakt-link {
+  font-size: 14px;
   font-weight: 600;
-  color: var(--anthrazit);
+  color: var(--muted);
   transition: color .2s;
 }
 .kontakt-link:hover { color: var(--cyan); }
-.kontakt-wa { color: #25D366; }
-.kontakt-wa:hover { color: #1da851; }
 
 .kontakt-form { display: flex; flex-direction: column; gap: 14px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -591,11 +591,17 @@ textarea { resize: vertical; }
 .kontakt-wa-klein { color: var(--muted); font-size: 14px; font-weight: 500; }
 .kontakt-wa-klein:hover { color: var(--cyan); }
 
-.kontakt-form-wrap { display: flex; flex-direction: column; gap: 16px; }
+.kontakt-form-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
 
 .kategorie-picker {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
 }
 .kat-btn {
@@ -763,10 +769,10 @@ textarea { resize: vertical; }
   .step { max-width: 100%; text-align: center; }
   .step-arrow { display: none; }
 
-  .kontakt-inner { grid-template-columns: 1fr; gap: 40px; }
   .form-row { grid-template-columns: 1fr; }
-  .kategorie-picker { grid-template-columns: 1fr; }
+  .kategorie-picker { grid-template-columns: 1fr 1fr; }
   .artikel-row { grid-template-columns: 1fr; }
+  .kontakt-infos { flex-direction: column; align-items: center; gap: 12px; }
 
   .footer-inner { flex-direction: column; text-align: center; }
 }
