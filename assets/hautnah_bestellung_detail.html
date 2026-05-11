@@ -1,0 +1,116 @@
+
+<h2 class="sr-only">Hautnah Textil – Bestelldetail Ansicht Thomas Berger, FC Dortmund-Süd</h2>
+
+<style>
+.detail-header{display:flex;align-items:center;gap:12px;padding:1rem 0 1.5rem;}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 12px;background:transparent;}
+.back-btn:hover{background:var(--color-background-secondary);}
+.detail-title{font-size:17px;font-weight:500;color:var(--color-text-primary);}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:#E1F5EE;color:#0F6E56;margin-left:auto;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;}
+.card-title{font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.info-row:last-child{border-bottom:none;}
+.info-label{font-size:13px;color:var(--color-text-secondary);}
+.info-value{font-size:13px;color:var(--color-text-primary);font-weight:500;}
+.artikel-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:10px;}
+.artikel-header{background:#2B2D2F;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.artikel-nr{font-size:12px;color:#00C2C7;font-weight:500;}
+.artikel-name{font-size:13px;color:#fff;font-weight:500;}
+.artikel-body{padding:12px 14px;}
+.artikel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.artikel-field{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px;}
+.artikel-field-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:2px;}
+.artikel-field-value{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.groessen{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.groesse-pill{padding:3px 9px;border-radius:20px;font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);}
+.reply-box{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-top:12px;}
+.reply-input{width:100%;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:13px;background:var(--color-background-secondary);color:var(--color-text-primary);resize:vertical;min-height:80px;box-sizing:border-box;margin:10px 0;}
+.reply-actions{display:flex;gap:8px;justify-content:flex-end;}
+.btn-primary{padding:8px 20px;border-radius:var(--border-radius-md);font-size:13px;border:none;background:#2B2D2F;color:#00C2C7;cursor:pointer;font-weight:500;}
+.btn-secondary{padding:8px 16px;border-radius:var(--border-radius-md);font-size:13px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;}
+.timeline{margin-top:4px;}
+.tl-item{display:flex;gap:10px;padding:6px 0;}
+.tl-dot{width:8px;height:8px;border-radius:50%;background:#00C2C7;margin-top:5px;flex-shrink:0;}
+.tl-dot.gray{background:var(--color-border-secondary);}
+.tl-text{font-size:12px;color:var(--color-text-secondary);line-height:1.5;}
+.tl-time{font-size:11px;color:var(--color-text-tertiary);}
+</style>
+
+<div class="detail-header">
+  <button class="back-btn"><i class="ti ti-arrow-left" aria-hidden="true"></i> Zurück</button>
+  <span class="detail-title">Bestellung #2024-047 – Thomas Berger</span>
+  <span class="status-badge"><i class="ti ti-circle-check" aria-hidden="true"></i> Neu</span>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Kundendaten</div>
+    <div class="info-row"><span class="info-label">Name</span><span class="info-value">Thomas Berger</span></div>
+    <div class="info-row"><span class="info-label">Adresse</span><span class="info-value">Musterstr. 12, 44137 Dortmund</span></div>
+    <div class="info-row"><span class="info-label">Typ</span><span class="info-value">Verein</span></div>
+    <div class="info-row"><span class="info-label">Verein</span><span class="info-value">FC Dortmund-Süd</span></div>
+    <div class="info-row"><span class="info-label">E-Mail</span><span class="info-value" style="color:#00C2C7;">t.berger@fcdortmund-sued.de</span></div>
+    <div class="info-row"><span class="info-label">Telefon</span><span class="info-value">0231 / 445 8821</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Rechnungsadresse</div>
+    <div class="info-row"><span class="info-label">Abweichend</span><span class="info-value">Ja</span></div>
+    <div class="info-row"><span class="info-label">Name</span><span class="info-value">FC Dortmund-Süd e.V.</span></div>
+    <div class="info-row"><span class="info-label">Adresse</span><span class="info-value">Vereinsstr. 4, 44139 Dortmund</span></div>
+    <div style="margin-top:16px;">
+      <div class="card-title">Verlauf</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-text">Bestellung eingegangen</div><div class="tl-time">Heute, 09:14 Uhr</div></div></div>
+        <div class="tl-item"><div class="tl-dot gray"></div><div><div class="tl-text">Noch keine Antwort</div><div class="tl-time">–</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Artikel</div>
+
+<div class="artikel-card">
+  <div class="artikel-header">
+    <span class="artikel-name">Trikot Heim – Saison 24/25</span>
+    <span class="artikel-nr">Art.-Nr. TRK-2425-H</span>
+  </div>
+  <div class="artikel-body">
+    <div class="artikel-grid">
+      <div class="artikel-field"><div class="artikel-field-label">Stückzahl</div><div class="artikel-field-value">18 Stück</div></div>
+      <div class="artikel-field"><div class="artikel-field-label">Druckposition</div><div class="artikel-field-value">Brust + Rücken</div></div>
+      <div class="artikel-field"><div class="artikel-field-label">Nummer / Name</div><div class="artikel-field-value">Ja / Ja</div></div>
+    </div>
+    <div style="margin-top:10px;"><div class="artikel-field-label" style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Größen</div>
+    <div class="groessen">
+      <span class="groesse-pill">S ×2</span><span class="groesse-pill">M ×4</span><span class="groesse-pill">L ×6</span><span class="groesse-pill">XL ×4</span><span class="groesse-pill">XXL ×2</span>
+    </div></div>
+  </div>
+</div>
+
+<div class="artikel-card">
+  <div class="artikel-header">
+    <span class="artikel-name">Torwart-Trikot</span>
+    <span class="artikel-nr">Art.-Nr. TRK-GK-01</span>
+  </div>
+  <div class="artikel-body">
+    <div class="artikel-grid">
+      <div class="artikel-field"><div class="artikel-field-label">Stückzahl</div><div class="artikel-field-value">2 Stück</div></div>
+      <div class="artikel-field"><div class="artikel-field-label">Druckposition</div><div class="artikel-field-value">Rücken</div></div>
+      <div class="artikel-field"><div class="artikel-field-label">Nummer / Name</div><div class="artikel-field-value">Ja / Ja</div></div>
+    </div>
+    <div style="margin-top:10px;"><div class="artikel-field-label" style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Größen</div>
+    <div class="groessen"><span class="groesse-pill">L ×1</span><span class="groesse-pill">XL ×1</span></div></div>
+  </div>
+</div>
+
+<div class="reply-box">
+  <div class="card-title">Antwort an Kunden</div>
+  <textarea class="reply-input" placeholder="Antwort schreiben... wird direkt per E-Mail an t.berger@fcdortmund-sued.de gesendet"></textarea>
+  <div class="reply-actions">
+    <button class="btn-secondary">Als erledigt markieren</button>
+    <button class="btn-primary"><i class="ti ti-send" aria-hidden="true"></i> Senden</button>
+  </div>
+</div>

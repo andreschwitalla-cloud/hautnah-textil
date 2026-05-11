@@ -5,3 +5,5 @@ backend/venv/
 backend/__pycache__/
 *.pyc
 assets/hautnah Textil Werbung.pdf
+assets/*.mp4
+backend/*.log

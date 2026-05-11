@@ -1,0 +1,153 @@
+
+<h2 class="sr-only">Hautnah Textil Admin Dashboard – Übersicht aller Kundenanfragen</h2>
+
+<style>
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0 1.5rem;}
+.dash-logo{font-size:18px;font-weight:500;color:var(--color-text-primary);letter-spacing:1px;}
+.dash-logo span{color:#00C2C7;}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.875rem 1rem;}
+.metric-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.metric-value.cyan{color:#00C2C7;}
+.tabs{display:flex;gap:4px;margin-bottom:1rem;}
+.tab{padding:6px 14px;border-radius:var(--border-radius-md);font-size:13px;border:0.5px solid var(--color-border-tertiary);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);}
+.tab.active{background:#2B2D2F;color:#00C2C7;border-color:#2B2D2F;}
+.table-wrap{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{text-align:left;padding:10px 14px;font-size:12px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);}
+.tbl td{padding:11px 14px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--color-background-secondary);}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;}
+.b-order{background:#E1F5EE;color:#0F6E56;}
+.b-quote{background:#E6F1FB;color:#185FA5;}
+.b-delivery{background:#FAEEDA;color:#854F0B;}
+.b-complaint{background:#FCEBEB;color:#A32D2D;}
+.b-callback{background:#EEEDFE;color:#534AB7;}
+.b-message{background:#F1EFE8;color:#5F5E5A;}
+.status-new{display:inline-block;width:8px;height:8px;border-radius:50%;background:#00C2C7;margin-right:6px;}
+.status-open{display:inline-block;width:8px;height:8px;border-radius:50%;background:#EF9F27;margin-right:6px;}
+.status-done{display:inline-block;width:8px;height:8px;border-radius:50%;background:#639922;margin-right:6px;}
+.btn-reply{padding:4px 12px;border-radius:var(--border-radius-md);font-size:12px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;}
+.btn-reply:hover{background:var(--color-background-secondary);}
+.sidebar-row{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start;}
+.sidebar{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;}
+.sidebar-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:12px;}
+.chart-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.chart-label{font-size:12px;color:var(--color-text-secondary);width:80px;text-align:right;}
+.chart-track{flex:1;height:8px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;}
+.chart-fill{height:100%;border-radius:4px;background:#00C2C7;}
+.chart-fill.dark{background:#2B2D2F;}
+.chart-num{font-size:12px;color:var(--color-text-secondary);width:20px;}
+</style>
+
+<div class="dash-header">
+  <div class="dash-logo">HAUT<span>NAH</span> <span style="font-size:11px;font-weight:400;color:var(--color-text-secondary);letter-spacing:3px;">ADMIN</span></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:12px;color:var(--color-text-secondary);">Maik Portmann</span>
+    <div style="width:30px;height:30px;border-radius:50%;background:#2B2D2F;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#00C2C7;">MP</div>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-label">Neue Anfragen</div><div class="metric-value cyan">7</div></div>
+  <div class="metric"><div class="metric-label">In Bearbeitung</div><div class="metric-value">12</div></div>
+  <div class="metric"><div class="metric-label">Heute erledigt</div><div class="metric-value">4</div></div>
+  <div class="metric"><div class="metric-label">Gesamt (Monat)</div><div class="metric-value">38</div></div>
+</div>
+
+<div class="sidebar-row">
+  <div>
+    <div class="tabs">
+      <div class="tab active">Alle</div>
+      <div class="tab">Bestellung</div>
+      <div class="tab">Angebot</div>
+      <div class="tab">Reklamation</div>
+    </div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Typ</th>
+            <th>Kunde</th>
+            <th>Verein</th>
+            <th>Eingegangen</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="status-new"></span>Neu</td>
+            <td><span class="badge b-order">Bestellung</span></td>
+            <td>Thomas Berger</td>
+            <td>FC Dortmund-Süd</td>
+            <td>Heute, 09:14</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+          <tr>
+            <td><span class="status-new"></span>Neu</td>
+            <td><span class="badge b-callback">Rückruf</span></td>
+            <td>Sabine Müller</td>
+            <td>Privat</td>
+            <td>Heute, 08:47</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+          <tr>
+            <td><span class="status-open"></span>Offen</td>
+            <td><span class="badge b-quote">Angebot</span></td>
+            <td>Jan Hoffmann</td>
+            <td>TSV Bochum 09</td>
+            <td>Gestern, 16:30</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+          <tr>
+            <td><span class="status-open"></span>Offen</td>
+            <td><span class="badge b-complaint">Reklamation</span></td>
+            <td>Laura Klein</td>
+            <td>SV Herne West</td>
+            <td>Gestern, 11:05</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+          <tr>
+            <td><span class="status-open"></span>Offen</td>
+            <td><span class="badge b-delivery">Liefertermin</span></td>
+            <td>Markus Weber</td>
+            <td>FC Recklinghausen</td>
+            <td>07.05, 14:22</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+          <tr>
+            <td><span class="status-done"></span>Erledigt</td>
+            <td><span class="badge b-order">Bestellung</span></td>
+            <td>Anna Schmidt</td>
+            <td>DJK Witten</td>
+            <td>07.05, 10:11</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+          <tr>
+            <td><span class="status-done"></span>Erledigt</td>
+            <td><span class="badge b-message">Nachricht</span></td>
+            <td>Peter Braun</td>
+            <td>Firma Braun GmbH</td>
+            <td>06.05, 17:40</td>
+            <td><button class="btn-reply">Antworten</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div>
+    <div class="sidebar">
+      <div class="sidebar-title">Anfragen nach Typ</div>
+      <div class="chart-bar"><span class="chart-label">Bestellung</span><div class="chart-track"><div class="chart-fill" style="width:72%"></div></div><span class="chart-num">14</span></div>
+      <div class="chart-bar"><span class="chart-label">Angebot</span><div class="chart-track"><div class="chart-fill" style="width:46%"></div></div><span class="chart-num">9</span></div>
+      <div class="chart-bar"><span class="chart-label">Liefertermin</span><div class="chart-track"><div class="chart-fill dark" style="width:26%"></div></div><span class="chart-num">5</span></div>
+      <div class="chart-bar"><span class="chart-label">Reklamation</span><div class="chart-track"><div class="chart-fill dark" style="width:20%"></div></div><span class="chart-num">4</span></div>
+      <div class="chart-bar"><span class="chart-label">Rückruf</span><div class="chart-track"><div class="chart-fill dark" style="width:15%"></div></div><span class="chart-num">3</span></div>
+      <div class="chart-bar"><span class="chart-label">Nachricht</span><div class="chart-track"><div class="chart-fill dark" style="width:15%"></div></div><span class="chart-num">3</span></div>
+    </div>
+  </div>
+</div>
