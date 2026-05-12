@@ -6,14 +6,34 @@ load_dotenv()
 import os
 import json
 import time
+import hmac
+import hashlib
+import bcrypt
+import secrets as _secrets
+import threading
 from collections import defaultdict
+from datetime import timedelta
 import requests as http
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from database import init_db, get_db, formular_speichern
 from whatsapp import parse_webhook, sende_nachricht, verarbeite_nachricht
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'hautnah-dev-key')
+
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+app.logger.setLevel(logging.INFO)
+
+app.secret_key = os.environ['SECRET_KEY']  # KeyError bei Start wenn fehlt – Absicht
+if len(app.secret_key) < 32:
+    raise RuntimeError('SECRET_KEY zu kurz (mind. 32 Zeichen erforderlich)')
+
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
+)
 
 init_db()
 
@@ -32,6 +52,17 @@ def _rate_ok(ip: str, max_versuche: int = 10, fenster: int = 300) -> bool:
 
 # ── WhatsApp Webhook ──────────────────────────────────────────────────────────
 
+def _webhook_signatur_gueltig(raw_body: bytes, signature_header: str) -> bool:
+    """Validiert X-Hub-Signature-256 von Meta gegen WA_APP_SECRET."""
+    secret = os.environ.get('WA_APP_SECRET', '').encode('utf-8')
+    if not secret or not signature_header:
+        return False
+    if not signature_header.startswith('sha256='):
+        return False
+    erwartet = hmac.new(secret, raw_body, hashlib.sha256).hexdigest()
+    geliefert = signature_header[len('sha256='):]
+    return hmac.compare_digest(erwartet, geliefert)
+
 @app.route('/webhook', methods=['GET'])
 def webhook_verify():
     if request.args.get('hub.verify_token') == os.getenv('WA_VERIFY_TOKEN'):
@@ -40,12 +71,38 @@ def webhook_verify():
 
 @app.route('/webhook', methods=['POST'])
 def webhook_receive():
+    raw = request.get_data(cache=True)
+    sig = request.headers.get('X-Hub-Signature-256', '')
+    enforce = os.environ.get('WEBHOOK_ENFORCE_SIG', '1') == '1'
+    if not _webhook_signatur_gueltig(raw, sig):
+        app.logger.warning(f'Webhook-Signatur ungültig (enforce={enforce}, sig_present={bool(sig)})')
+        if enforce:
+            return jsonify({'error': 'invalid signature'}), 403
     data = request.get_json(silent=True) or {}
     msgs = parse_webhook(data)
     for m in msgs:
         antwort = verarbeite_nachricht(m['wa_id'], m['name'], m['text'])
         sende_nachricht(m['wa_id'], antwort)
     return jsonify({'status': 'ok'})
+
+
+# ── CSRF ─────────────────────────────────────────────────────────────────────
+
+def _csrf_token() -> str:
+    if 'csrf' not in session:
+        session['csrf'] = _secrets.token_urlsafe(32)
+    return session['csrf']
+
+def _csrf_ok() -> bool:
+    geliefert = request.headers.get('X-CSRF-Token', '')
+    erwartet  = session.get('csrf', '')
+    if not erwartet or not geliefert:
+        return False
+    return _secrets.compare_digest(geliefert, erwartet)
+
+@app.context_processor
+def _inject_csrf():
+    return {'csrf_token': _csrf_token}
 
 
 # ── Admin Dashboard ───────────────────────────────────────────────────────────
@@ -56,8 +113,12 @@ def admin_login():
         ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
         if not _rate_ok(ip):
             return render_template('login.html', fehler='Zu viele Versuche. Bitte 5 Minuten warten.')
-        if request.form.get('passwort') == os.getenv('ADMIN_PASSWORD', 'hautnah2025'):
+        eingabe = request.form.get('passwort', '').encode('utf-8')
+        hash_aus_env = os.environ.get('ADMIN_PASSWORD_HASH', '').encode('utf-8')
+        if hash_aus_env and bcrypt.checkpw(eingabe, hash_aus_env):
+            session.clear()
             session['admin'] = True
+            session.permanent = True
             return redirect(url_for('admin_dashboard'))
         return render_template('login.html', fehler='Falsches Passwort')
     return render_template('login.html', fehler=None)
@@ -125,6 +186,8 @@ def admin_dashboard():
 def admin_antworten():
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
+    if not _csrf_ok():
+        return jsonify({'ok': False, 'error': 'CSRF'}), 403
     wa_id = (request.json or {}).get('wa_id')
     text  = (request.json or {}).get('text')
     if not wa_id or not text:
@@ -136,6 +199,8 @@ def admin_antworten():
 def formular_status(fid):
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
+    if not _csrf_ok():
+        return jsonify({'ok': False, 'error': 'CSRF'}), 403
     status = (request.json or {}).get('status')
     if status not in ('neu', 'gelesen', 'erledigt', 'beantwortet'):
         return jsonify({'ok': False})
@@ -159,6 +224,8 @@ def admin_anfrage_detail(fid):
 def admin_anfrage_antworten(fid):
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
+    if not _csrf_ok():
+        return jsonify({'ok': False, 'error': 'CSRF'}), 403
     with get_db() as db:
         row = db.execute('SELECT * FROM formulare WHERE id=?', (fid,)).fetchone()
     if not row:
@@ -206,10 +273,10 @@ def admin_anfrage_antworten(fid):
         )
         if not r.ok:
             app.logger.error(f'Resend Fehler {r.status_code}: {r.text}')
-            return jsonify({'ok': False, 'error': r.text})
+            return jsonify({'ok': False, 'error': 'E-Mail-Versand fehlgeschlagen. Details im Server-Log.'}), 502
     except Exception as e:
         app.logger.error(f'Resend Exception: {e}')
-        return jsonify({'ok': False, 'error': str(e)})
+        return jsonify({'ok': False, 'error': 'E-Mail-Versand fehlgeschlagen. Details im Server-Log.'}), 502
     with get_db() as db:
         db.execute(
             "UPDATE formulare SET status='beantwortet', antwort=?, beantwortet_am=datetime('now','localtime') WHERE id=?",
@@ -221,6 +288,8 @@ def admin_anfrage_antworten(fid):
 def admin_anfrage_loeschen(fid):
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
+    if not _csrf_ok():
+        return jsonify({'ok': False, 'error': 'CSRF'}), 403
     with get_db() as db:
         row = db.execute('SELECT * FROM formulare WHERE id=?', (fid,)).fetchone()
         if not row:
@@ -250,6 +319,8 @@ def admin_papierkorb_detail(fid):
 def admin_papierkorb_leeren():
     if not session.get('admin'):
         return jsonify({'ok': False}), 401
+    if not _csrf_ok():
+        return jsonify({'ok': False, 'error': 'CSRF'}), 403
     with get_db() as db:
         db.execute('DELETE FROM formulare_geloescht')
     return jsonify({'ok': True})
@@ -287,10 +358,37 @@ def cors(response):
     response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
     return response
 
+_kontakt_requests: dict = defaultdict(list)
+_kontakt_lock = threading.Lock()
+
+def _kontakt_rate_ok(ip: str, max_pro_stunde: int = 5) -> bool:
+    jetzt = time.time()
+    fenster = 3600
+    with _kontakt_lock:
+        versuche = [t for t in _kontakt_requests[ip] if jetzt - t < fenster]
+        _kontakt_requests[ip] = versuche
+        if len(versuche) >= max_pro_stunde:
+            return False
+        _kontakt_requests[ip].append(jetzt)
+        return True
+
+def _get_client_ip() -> str:
+    return (
+        request.headers.get('CF-Connecting-IP')
+        or request.headers.get('X-Forwarded-For', '').split(',')[0].strip()
+        or request.remote_addr
+        or ''
+    ).strip()
+
 @app.route('/api/kontakt', methods=['POST', 'OPTIONS'])
 def api_kontakt():
     if request.method == 'OPTIONS':
         return '', 204
+    ip = _get_client_ip()
+    app.logger.info(f'Kontakt-Anfrage von IP: {repr(ip)}')
+    if not _kontakt_rate_ok(ip):
+        app.logger.warning(f'Rate-Limit Kontaktformular: {ip}')
+        return jsonify({'ok': True}), 200
 
     data      = request.get_json(silent=True) or {}
 

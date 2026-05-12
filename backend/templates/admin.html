@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Admin – Hautnah Textil</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -363,9 +364,11 @@ document.querySelectorAll('.filter-tab').forEach(btn => {
   });
 });
 
+const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
 async function papierkorbLeeren() {
   if (!confirm('Papierkorb wirklich komplett leeren? Alle Einträge werden dauerhaft gelöscht.')) return;
-  const r = await fetch('/admin/papierkorb/leeren', {method: 'POST'});
+  const r = await fetch('/admin/papierkorb/leeren', {method: 'POST', headers: {'X-CSRF-Token': CSRF}});
   const d = await r.json();
   if (d.ok) {
     document.getElementById('papierkorbTabelle')?.closest('.table-wrap')?.remove();
@@ -375,7 +378,7 @@ async function papierkorbLeeren() {
 
 async function loescheAnfrage(fid, btn) {
   if (!confirm('Anfrage löschen?')) return;
-  const r = await fetch(`/admin/anfrage/${fid}/loeschen`, {method: 'POST'});
+  const r = await fetch(`/admin/anfrage/${fid}/loeschen`, {method: 'POST', headers: {'X-CSRF-Token': CSRF}});
   const d = await r.json();
   if (d.ok) {
     btn.closest('tr').remove();
@@ -387,7 +390,7 @@ async function loescheAnfrage(fid, btn) {
 async function aktualisiereStatus(fid, status) {
   await fetch(`/admin/formular/${fid}/status`, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'X-CSRF-Token': CSRF},
     body: JSON.stringify({status})
   });
 }
@@ -419,7 +422,7 @@ async function sendeAntwort() {
   if (!text) return;
   const r = await fetch('/admin/antworten', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'X-CSRF-Token': CSRF},
     body: JSON.stringify({wa_id: aktiverWaId, text})
   });
   const d = await r.json();

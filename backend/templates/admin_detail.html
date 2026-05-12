@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Anfrage #{{ f.id }} – Hautnah Admin</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -292,9 +293,11 @@ window.addEventListener('DOMContentLoaded', () => {
   ta.setSelectionRange(anredeZeile().length, anredeZeile().length);
 });
 
+const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
 async function anfrageLoschen() {
   if (!confirm('Anfrage #' + FID + ' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
-  const r = await fetch(`/admin/anfrage/${FID}/loeschen`, {method: 'POST'});
+  const r = await fetch(`/admin/anfrage/${FID}/loeschen`, {method: 'POST', headers: {'X-CSRF-Token': CSRF}});
   const d = await r.json();
   if (d.ok) {
     window.location = '/admin';
@@ -306,7 +309,7 @@ async function anfrageLoschen() {
 async function aktualisiereStatus(status) {
   await fetch(`/admin/formular/${FID}/status`, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'X-CSRF-Token': CSRF},
     body: JSON.stringify({status})
   });
 }
@@ -329,7 +332,7 @@ async function sendeAntwort() {
 
   const r = await fetch(`/admin/anfrage/${FID}/antworten`, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'X-CSRF-Token': CSRF},
     body: JSON.stringify({text})
   });
   const d = await r.json();

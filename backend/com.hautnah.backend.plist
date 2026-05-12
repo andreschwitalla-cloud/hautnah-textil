@@ -16,7 +16,8 @@
 
     <key>EnvironmentVariables</key>
     <dict>
-        <!-- Werte aus .env werden von python-dotenv geladen -->
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
     </dict>
 
     <key>RunAtLoad</key>
