@@ -105,34 +105,29 @@
   </nav>
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
+  <section class="hero-banner">
+    <div class="hero-banner-bg" id="heroBg" style="background-image:url('assets/foto-guinea-team.jpg')"></div>
+    <div class="hero-banner-overlay"></div>
+    <div class="hero-banner-content container">
       <p class="hero-eyebrow anim-up" style="transition-delay:.05s">Für Vereine. Für Teams. Für euch.</p>
-      <div class="hero-wordmark anim-up" style="transition-delay:.15s">
-        <img src="assets/logo.png" alt="Hautnah Textil" class="hero-logo-img">
-      </div>
-      <h1 class="hero-claim anim-up" style="transition-delay:.25s">Textildruck für Deinen Verein.</h1>
-      <p class="hero-sub anim-up" style="transition-delay:.35s">Trikots, Trainingskleidung und Vereinsausrüstung – individuell bedruckt. Exklusiv-Druckpartner von Stanno &amp; Reece. Aus Dortmund für das Ruhrgebiet.</p>
-      <div class="hero-cta anim-up" style="transition-delay:.45s">
+      <h1 class="anim-up" style="transition-delay:.15s">FÜR DEINEN<br>VEREIN.</h1>
+      <p class="hero-sub anim-up" style="transition-delay:.25s">Trikots, Trainingskleidung und Vereinsausrüstung – individuell bedruckt. Exklusiv-Druckpartner von Stanno &amp; Reece. Aus Dortmund für das Ruhrgebiet.</p>
+      <div class="hero-cta anim-up" style="transition-delay:.35s">
         <a href="#kontakt" class="btn-primary">Jetzt anfragen</a>
-        <a href="#leistungen" class="btn-ghost">Leistungen</a>
+        <a href="#leistungen" class="btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.3)">Leistungen</a>
       </div>
-    </div>
-    <div class="hero-visual anim-up" style="transition-delay:.2s">
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="stat-num">500+</span>
-          <span class="stat-label">zufriedene Vereine</span>
+      <div class="hero-banner-stats anim-up" style="transition-delay:.45s">
+        <div class="hero-banner-stat">
+          <span class="hero-banner-stat-num">500+</span>
+          <span class="hero-banner-stat-lbl">Zufriedene Vereine</span>
         </div>
-        <div class="hero-divider"></div>
-        <div class="hero-stat">
-          <span class="stat-num">ab 10</span>
-          <span class="stat-label">Stück bestellen</span>
+        <div class="hero-banner-stat">
+          <span class="hero-banner-stat-num">ab 10</span>
+          <span class="hero-banner-stat-lbl">Stück bestellen</span>
         </div>
-        <div class="hero-divider"></div>
-        <div class="hero-stat">
-          <span class="stat-num" style="font-size:28px;letter-spacing:0">Express</span>
-          <span class="stat-label">Lieferung zum Verein</span>
+        <div class="hero-banner-stat">
+          <span class="hero-banner-stat-num">Express</span>
+          <span class="hero-banner-stat-lbl">Lieferung zum Verein</span>
         </div>
       </div>
     </div>
@@ -185,19 +180,28 @@
   <section class="galerie">
     <div class="galerie-grid">
       <div class="galerie-bild galerie-bild--1">
-        <div class="galerie-overlay">
-          <span>Trikotdruck</span>
-        </div>
+        <div class="galerie-overlay"><span>Unser Showroom</span></div>
       </div>
       <div class="galerie-bild galerie-bild--2">
-        <div class="galerie-overlay">
-          <span>Trainingskleidung</span>
-        </div>
+        <div class="galerie-overlay"><span>Persönliche Beratung</span></div>
       </div>
       <div class="galerie-bild galerie-bild--3">
-        <div class="galerie-overlay">
-          <span>Vereinsausstattung</span>
-        </div>
+        <div class="galerie-overlay"><span>Weltweit dabei</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEHR ALS TEXTIL -->
+  <section class="charity">
+    <div class="charity-inner">
+      <div class="charity-content">
+        <span class="label" style="color:var(--cyan)">Soziales Engagement</span>
+        <h2 style="color:#fff;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-.5px;margin:14px 0 20px;line-height:1.1">Trikots, die mehr<br>bedeuten.</h2>
+        <p style="color:rgba(255,255,255,.72);font-size:16px;line-height:1.8;margin-bottom:32px">Wir glauben, dass Sport verbindet – über Grenzen hinaus. Unsere Trikots tragen den hautnah-Schriftzug bis nach Guinea, wo wir ein lokales Team mit Ausrüstung unterstützen. Fußball als Sprache, Textil als Botschaft.</p>
+        <a href="#kontakt" class="btn-primary">Euer Verein, unsere Mission</a>
+      </div>
+      <div class="charity-img">
+        <img src="assets/foto-guinea-portrait.jpg" alt="Hautnah Trikot – Charity-Aktion Guinea" loading="lazy">
       </div>
     </div>
   </section>
@@ -233,7 +237,7 @@
     <div class="stanno-banner">
       <div class="stanno-banner-bg"></div>
       <div class="stanno-banner-content container">
-        <span class="label" style="color:#00C2C7">Exklusiv-Druckpartner von Stanno &amp; Reece</span>
+        <span class="label" style="color:#FF5200">Exklusiv-Druckpartner von Stanno &amp; Reece</span>
         <h2>Werde Teil der<br>Stanno Vereinswelt.</h2>
         <p>Als Exklusiv-Druckpartner von Stanno bringen wir die Stanno Vereinswelt direkt zu euch ins Ruhrgebiet. Über Stanno hinaus bedrucken wir auch Reece-Artikel mit gleicher Qualität – Vereinsausstattung, Trikots, Teamwear, alles aus einer Hand.</p>
         <div class="stanno-vorteile">
@@ -333,6 +337,13 @@
         <span class="label">Kontakt</span>
         <h2>Wie können wir helfen?</h2>
         <p>Wählt den passenden Grund – wir melden uns innerhalb von 24 Stunden zurück.</p>
+      </div>
+      <div class="kontakt-foto-banner">
+        <img src="assets/foto-maik-sohn.webp" alt="Maik &amp; Sohn — Hautnah Textil" loading="lazy">
+        <div class="kontakt-foto-caption">
+          <strong>Maik &amp; Sohn — Hautnah Textil</strong>
+          <span>Wer anruft, redet mit einem Portmann.</span>
+        </div>
       </div>
       <div class="kontakt-form-wrap">
         <div class="kategorie-picker" id="kategoriePicker">

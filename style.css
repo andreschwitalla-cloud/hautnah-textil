@@ -66,8 +66,8 @@
 :root {
   --anthrazit: #111111;
   --anthrazit-2: #111111;
-  --cyan:      #00C2C7;
-  --cyan-dk:   #009fa4;
+  --cyan:      #FF5200;
+  --cyan-dk:   #e04600;
   --white:     #ffffff;
   --off:       #f4f5f6;
   --muted:     #6b7280;
@@ -201,86 +201,82 @@ ul { list-style: none; }
 .mobile-menu.open { display: flex; }
 .mobile-menu .btn-nav { text-align: center; }
 
-/* ── Hero ──────────────────────────────────────────────────────────────────── */
-.hero {
-  min-height: 100vh;
+/* ── Hero Banner (Stanno-Stil) ─────────────────────────────────────────────── */
+.hero-banner {
+  position: relative;
+  min-height: 90vh;
   display: flex;
   align-items: center;
-  padding: 96px 24px 64px;
-  max-width: 1160px;
-  margin: 0 auto;
-  gap: 64px;
+  overflow: hidden;
 }
-.hero-content { flex: 1; }
-
+.hero-banner-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
+  transform: scale(1.03);
+  transition: transform 8s ease;
+}
+.hero-banner-bg.loaded { transform: scale(1); }
+.hero-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.35) 100%);
+}
+.hero-banner-content {
+  position: relative;
+  z-index: 1;
+  padding: 140px 24px 80px;
+  color: #fff;
+  max-width: 720px;
+}
+.hero-banner-content h1 {
+  font-size: clamp(44px, 7.5vw, 88px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: #fff;
+  margin: 12px 0 22px;
+  text-transform: uppercase;
+}
 .hero-eyebrow {
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 2px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--cyan);
-  margin-bottom: 20px;
-}
-
-.hero-wordmark {
-  margin-bottom: 24px;
-}
-.hero-logo-img {
-  width: clamp(160px, 45vw, 560px);
-  height: auto;
-  display: block;
-}
-.hero-claim {
-  font-size: clamp(18px, 2.5vw, 24px);
-  font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 16px;
-  color: var(--anthrazit-2);
+  margin-bottom: 0;
 }
 .hero-sub {
-  font-size: 16px;
-  color: var(--muted);
-  max-width: 480px;
+  font-size: 17px;
+  color: rgba(255,255,255,.78);
+  max-width: 520px;
   margin-bottom: 36px;
   line-height: 1.75;
 }
 .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
-
-/* Hero Stats Block */
-.hero-visual {
-  flex: 0 0 auto;
-}
-.hero-stats {
+.hero-banner-stats {
   display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  min-width: 200px;
+  gap: 48px;
+  margin-top: 52px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,.18);
+  flex-wrap: wrap;
 }
-.hero-stat {
-  padding: 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.hero-divider {
-  height: 1px;
-  background: var(--border);
-}
-.stat-num {
-  font-size: 36px;
+.hero-banner-stat { display: flex; flex-direction: column; gap: 4px; }
+.hero-banner-stat-num {
+  font-size: 30px;
   font-weight: 900;
   color: var(--cyan);
   letter-spacing: -1px;
   line-height: 1;
-  white-space: nowrap;
 }
-.stat-label {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 500;
+.hero-banner-stat-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,.55);
+  text-transform: uppercase;
+  letter-spacing: .8px;
 }
 
 /* ── Section Head ──────────────────────────────────────────────────────────── */
@@ -381,15 +377,16 @@ ul { list-style: none; }
 }
 .galerie-bild--1 {
   background-color: var(--anthrazit);
-  background-image: url('assets/foto-1.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Stanno-F_r-Vereine-Hero-Banner-Mobile.webp');
+  background-image: url('assets/foto-showroom.webp');
 }
 .galerie-bild--2 {
   background-color: #2a3540;
-  background-image: url('assets/foto-2.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Trikots.webp');
+  background-image: url('assets/foto-beratung.webp');
 }
 .galerie-bild--3 {
   background-color: #1a2830;
-  background-image: url('assets/foto-3.jpg'), url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Design_ohne_Titel-17.png');
+  background-image: url('assets/foto-guinea-team.jpg');
+  background-position: center 30%;
 }
 .galerie-overlay {
   position: absolute;
@@ -405,6 +402,72 @@ ul { list-style: none; }
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(255,255,255,.7);
+}
+
+/* ── Charity ───────────────────────────────────────────────────────────────── */
+.charity { background: var(--anthrazit); overflow: hidden; }
+.charity-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 380px;
+  max-height: 440px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.charity-content {
+  padding: 56px 48px 56px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.charity-img { position: relative; overflow: hidden; }
+.charity-img img {
+  width: 100%;
+  height: 100%;
+  max-height: 440px;
+  object-fit: cover;
+  object-position: center 10%;
+  display: block;
+  transition: transform .5s ease;
+}
+.charity-img:hover img { transform: scale(1.03); }
+@media (max-width: 768px) {
+  .charity-inner { grid-template-columns: 1fr; }
+  .charity-img { height: 320px; }
+  .charity-content { padding: 56px 24px 40px; }
+}
+
+/* ── Kontakt Foto Banner ───────────────────────────────────────────────────── */
+.kontakt-foto-banner {
+  max-width: 600px;
+  margin: 0 auto 36px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 28px rgba(0,0,0,.1);
+}
+.kontakt-foto-banner img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+.kontakt-foto-caption {
+  padding: 14px 20px;
+  background: var(--off);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.kontakt-foto-caption strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--anthrazit);
+}
+.kontakt-foto-caption span {
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* ── USPs ──────────────────────────────────────────────────────────────────── */
@@ -794,6 +857,10 @@ textarea { resize: vertical; }
   .stat-num { font-size: 24px; }
   .stat-label { font-size: 10px; }
 
+  .hero-banner { min-height: 70vh; }
+  .hero-banner-content { padding: 100px 20px 60px; }
+  .hero-banner-stats { gap: 28px; }
+
   .galerie-grid { grid-template-columns: 1fr; height: auto; }
   .galerie-bild { height: 220px; display: block !important; }
 
@@ -845,7 +912,7 @@ textarea { resize: vertical; }
   overflow: hidden;
 }
 .faq-item[open] {
-  border-color: #00C2C7;
+  border-color: #FF5200;
 }
 .faq-q {
   padding: 16px 20px;
@@ -864,7 +931,7 @@ textarea { resize: vertical; }
   content: '+';
   font-size: 20px;
   font-weight: 300;
-  color: #00C2C7;
+  color: #FF5200;
   flex-shrink: 0;
   margin-left: 12px;
   transition: transform .2s;

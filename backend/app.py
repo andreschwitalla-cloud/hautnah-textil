@@ -6,8 +6,6 @@ load_dotenv()
 import os
 import json
 import time
-import hmac
-import hashlib
 import bcrypt
 import secrets as _secrets
 import threading
@@ -16,7 +14,6 @@ from datetime import timedelta
 import requests as http
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from database import init_db, get_db, formular_speichern
-from whatsapp import parse_webhook, sende_nachricht, verarbeite_nachricht
 
 app = Flask(__name__)
 
@@ -49,41 +46,6 @@ def _rate_ok(ip: str, max_versuche: int = 10, fenster: int = 300) -> bool:
     _login_attempts[ip].append(jetzt)
     return True
 
-
-# ── WhatsApp Webhook ──────────────────────────────────────────────────────────
-
-def _webhook_signatur_gueltig(raw_body: bytes, signature_header: str) -> bool:
-    """Validiert X-Hub-Signature-256 von Meta gegen WA_APP_SECRET."""
-    secret = os.environ.get('WA_APP_SECRET', '').encode('utf-8')
-    if not secret or not signature_header:
-        return False
-    if not signature_header.startswith('sha256='):
-        return False
-    erwartet = hmac.new(secret, raw_body, hashlib.sha256).hexdigest()
-    geliefert = signature_header[len('sha256='):]
-    return hmac.compare_digest(erwartet, geliefert)
-
-@app.route('/webhook', methods=['GET'])
-def webhook_verify():
-    if request.args.get('hub.verify_token') == os.getenv('WA_VERIFY_TOKEN'):
-        return request.args.get('hub.challenge', ''), 200
-    return 'Forbidden', 403
-
-@app.route('/webhook', methods=['POST'])
-def webhook_receive():
-    raw = request.get_data(cache=True)
-    sig = request.headers.get('X-Hub-Signature-256', '')
-    enforce = os.environ.get('WEBHOOK_ENFORCE_SIG', '1') == '1'
-    if not _webhook_signatur_gueltig(raw, sig):
-        app.logger.warning(f'Webhook-Signatur ungültig (enforce={enforce}, sig_present={bool(sig)})')
-        if enforce:
-            return jsonify({'error': 'invalid signature'}), 403
-    data = request.get_json(silent=True) or {}
-    msgs = parse_webhook(data)
-    for m in msgs:
-        antwort = verarbeite_nachricht(m['wa_id'], m['name'], m['text'])
-        sende_nachricht(m['wa_id'], antwort)
-    return jsonify({'status': 'ok'})
 
 
 # ── CSRF ─────────────────────────────────────────────────────────────────────
@@ -136,12 +98,6 @@ def admin_dashboard():
         # Auto-Clean: Einträge im Papierkorb die älter als 30 Tage sind löschen
         db.execute("DELETE FROM formulare_geloescht WHERE geloescht_am < datetime('now','-30 days','localtime')")
 
-        nachrichten = db.execute(
-            'SELECT * FROM nachrichten ORDER BY erstellt_am ASC LIMIT 500'
-        ).fetchall()
-        namen = dict(db.execute(
-            'SELECT wa_id, name FROM sessions WHERE name IS NOT NULL'
-        ).fetchall())
         rows = db.execute(
             'SELECT * FROM formulare ORDER BY erstellt_am DESC LIMIT 50'
         ).fetchall()
@@ -151,7 +107,6 @@ def admin_dashboard():
             fd['daten'] = json.loads(fd['data'] or '{}')
             formulare.append(fd)
         stats = {
-            'gesamt':         db.execute('SELECT COUNT(*) FROM nachrichten WHERE typ="eingehend"').fetchone()[0],
             'neu':            db.execute('SELECT COUNT(*) FROM formulare WHERE status="neu"').fetchone()[0],
             'anfragen':       db.execute('SELECT COUNT(*) FROM formulare').fetchone()[0],
             'gelesen':        db.execute('SELECT COUNT(*) FROM formulare WHERE status="gelesen"').fetchone()[0],
@@ -175,25 +130,11 @@ def admin_dashboard():
             fd['daten'] = json.loads(fd['data'] or '{}')
             papierkorb.append(fd)
     return render_template('admin.html',
-                           nachrichten=nachrichten,
                            formulare=formulare,
                            stats=stats,
-                           namen=namen,
                            typ_stats=typ_stats,
                            papierkorb=papierkorb)
 
-@app.route('/admin/antworten', methods=['POST'])
-def admin_antworten():
-    if not session.get('admin'):
-        return jsonify({'ok': False}), 401
-    if not _csrf_ok():
-        return jsonify({'ok': False, 'error': 'CSRF'}), 403
-    wa_id = (request.json or {}).get('wa_id')
-    text  = (request.json or {}).get('text')
-    if not wa_id or not text:
-        return jsonify({'ok': False, 'error': 'Fehlende Parameter'})
-    ok = sende_nachricht(wa_id, text)
-    return jsonify({'ok': ok})
 
 @app.route('/admin/formular/<int:fid>/status', methods=['POST'])
 def formular_status(fid):
@@ -332,18 +273,7 @@ def admin_ping():
     with get_db() as db:
         neu   = db.execute('SELECT COUNT(*) FROM formulare WHERE status="neu"').fetchone()[0]
         total = db.execute('SELECT COUNT(*) FROM formulare').fetchone()[0]
-        wa    = db.execute('SELECT COUNT(*) FROM nachrichten').fetchone()[0]
-    return jsonify({'neu': neu, 'total': total, 'wa': wa})
-
-@app.route('/admin/nachrichten')
-def admin_nachrichten_api():
-    if not session.get('admin'):
-        return jsonify({'ok': False}), 401
-    with get_db() as db:
-        rows = db.execute(
-            'SELECT * FROM nachrichten ORDER BY erstellt_am DESC LIMIT 100'
-        ).fetchall()
-    return jsonify([dict(r) for r in rows])
+    return jsonify({'neu': neu, 'total': total})
 
 
 # ── Website Kontaktformular ───────────────────────────────────────────────────
