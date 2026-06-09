@@ -91,6 +91,13 @@
 .kat-btn.kat-glow { animation: katGlow .85s ease; }
 @media (prefers-reduced-motion: reduce) { .kat-btn.kat-glow { animation: none; } }
 
+/* WhatsApp-Link: blinkt grün auf und bleibt grün (per reveal.js, ~2s nach der Button-Welle) */
+@keyframes waBlink { 0%,50%,100% { opacity: 1; } 25%,75% { opacity: .2; } }
+.kontakt-wa-klein.wa-blink { animation: waBlink 1.4s ease both; }
+.kontakt-wa-klein.wa-green { color: #25D366 !important; text-shadow: 0 0 8px rgba(37,211,102,.30); }
+.kontakt-wa-klein.wa-green:hover { color: #3be57d !important; }
+@media (prefers-reduced-motion: reduce) { .kontakt-wa-klein.wa-blink { animation: none; } }
+
 /* ── Reset & Base ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

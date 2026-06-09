@@ -66,6 +66,11 @@
             b.style.animationDelay = (i * 150) + 'ms';
             b.classList.add('kat-glow');
           });
+          // 2 s nach der Button-Welle: WhatsApp-Link grün aufblinken lassen, dann grün lassen
+          var wa = document.querySelector('.kontakt-wa-klein');
+          if (wa) {
+            setTimeout(function () { wa.classList.add('wa-green', 'wa-blink'); }, 2000);
+          }
           pio.disconnect();
         }
       });
