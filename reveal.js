@@ -11,7 +11,6 @@
     '.usps .usp',
     '.steps > .step',
     '.kontakt-kopf',
-    '.kontakt-form-wrap',
     '.shop-teaser-inner > *',
     '.stanno-banner-content',
     '.stanno-grid > .stanno-item',
@@ -55,4 +54,22 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
 
   els.forEach(function (el) { io.observe(el); });
+
+  // Kontakt: Kategorie-Buttons nacheinander einmal aufleuchten lassen
+  var picker = document.querySelector('.kategorie-picker');
+  if (picker && !reduce && 'IntersectionObserver' in window) {
+    var btns = [].slice.call(picker.querySelectorAll('.kat-btn'));
+    var pio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          btns.forEach(function (b, i) {
+            b.style.animationDelay = (i * 150) + 'ms';
+            b.classList.add('kat-glow');
+          });
+          pio.disconnect();
+        }
+      });
+    }, { threshold: 0.45 });
+    pio.observe(picker);
+  }
 })();
