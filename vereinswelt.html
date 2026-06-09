@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{document.documentElement.className+=' sr';}catch(e){}</script>
 
   <title>Stanno Vereinswelt – Hautnah Textil | Exklusiv-Druckpartner</title>
   <meta name="description" content="Als Exklusiv-Druckpartner von Stanno & Reece bringen wir die Stanno Vereinswelt ins Ruhrgebiet: Trikots, Teamwear und Vereinsausstattung – individuell bedruckt, alles aus einer Hand.">
@@ -14,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260609b">
 </head>
 <body>
 
@@ -46,7 +47,7 @@
   <section class="stanno" style="margin-top:64px;">
     <div class="stanno-banner">
       <div class="stanno-banner-bg"></div>
-      <div class="stanno-banner-content container">
+      <div class="stanno-banner-content container reveal">
         <span class="label" style="color:#FF5200">Exklusiv-Druckpartner von Stanno &amp; Reece</span>
         <h2>Werde Teil der<br>Stanno Vereinswelt.</h2>
         <p>Als Exklusiv-Druckpartner von Stanno bringen wir die Stanno Vereinswelt direkt zu euch ins Ruhrgebiet. Über Stanno hinaus bedrucken wir auch Reece-Artikel mit gleicher Qualität – Vereinsausstattung, Trikots, Teamwear, alles aus einer Hand.</p>
@@ -106,5 +107,6 @@
     burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
   </script>
+  <script src="reveal.js?v=20260609b"></script>
 </body>
 </html>

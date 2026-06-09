@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Intro-Splash nur einmal pro Besuch zeigen (verhindert Flackern beim Zurückspringen) -->
-  <script>try{if(sessionStorage.getItem('introSeen'))document.documentElement.className+=' intro-seen';}catch(e){}</script>
+  <script>try{document.documentElement.className+=' sr';if(sessionStorage.getItem('introSeen'))document.documentElement.className+=' intro-seen';}catch(e){}</script>
 
   <title>Hautnah Textil – Trikots & Vereinsausstattung im Ruhrgebiet | Stanno-Partner</title>
   <meta name="description" content="Trikots, Trainingskleidung und Vereinsausstattung für Amateurfußballvereine im Ruhrgebiet. Individueller Textildruck, kurze Lieferzeiten, Vereinspreise. Offizieller Stanno-Partner – jetzt kostenlos anfragen.">
@@ -70,7 +70,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
   <meta name="robots" content="index, follow">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260609b">
 </head>
 <body>
 
@@ -400,6 +400,7 @@
     </div>
   </footer>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=20260609b"></script>
+  <script src="reveal.js?v=20260609b"></script>
 </body>
 </html>

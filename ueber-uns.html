@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{document.documentElement.className+=' sr';}catch(e){}</script>
 
   <title>Über uns – Hautnah Textil | Familienbetrieb aus Dortmund</title>
   <meta name="description" content="Hautnah Textil ist ein Familienbetrieb aus Dortmund, seit 2016 von der Familie Portmann geführt. Vereinstextil und Druck – persönlich, ohne Callcenter. Wer anruft, redet mit einem Portmann.">
@@ -14,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260609b">
 </head>
 <body>
 
@@ -44,7 +45,7 @@
 
   <!-- SOZIALES ENGAGEMENT (Hero, ohne Bild) -->
   <section class="charity" style="padding:128px 24px 104px;">
-    <div style="max-width:720px;margin:0 auto;text-align:center;">
+    <div class="reveal" style="max-width:720px;margin:0 auto;text-align:center;">
       <span class="label" style="color:var(--cyan)">Soziales Engagement</span>
       <h2 style="color:#fff;font-size:clamp(32px,5vw,52px);font-weight:900;letter-spacing:-.5px;margin:14px 0 22px;line-height:1.1">Trikots, die mehr bedeuten.</h2>
       <p style="color:rgba(255,255,255,.72);font-size:17px;line-height:1.85;max-width:600px;margin:0 auto 34px">Wir glauben, dass Sport verbindet – über Grenzen hinaus. Unsere Trikots tragen den hautnah-Schriftzug bis nach Guinea, wo wir ein lokales Team mit Ausrüstung unterstützen. Fußball als Sprache, Textil als Botschaft.</p>
@@ -101,5 +102,6 @@
     burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
   </script>
+  <script src="reveal.js?v=20260609b"></script>
 </body>
 </html>
