@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Intro-Splash nur einmal pro Besuch zeigen (verhindert Flackern beim Zurückspringen) -->
+  <script>try{if(sessionStorage.getItem('introSeen'))document.documentElement.className+=' intro-seen';}catch(e){}</script>
+
   <title>Hautnah Textil – Trikots & Vereinsausstattung im Ruhrgebiet | Stanno-Partner</title>
   <meta name="description" content="Trikots, Trainingskleidung und Vereinsausstattung für Amateurfußballvereine im Ruhrgebiet. Individueller Textildruck, kurze Lieferzeiten, Vereinspreise. Offizieller Stanno-Partner – jetzt kostenlos anfragen.">
   <link rel="canonical" href="https://www.hautnah-textil.de/">
@@ -88,9 +91,9 @@
       </a>
       <ul class="nav-links">
         <li><a href="#leistungen">Leistungen</a></li>
-        <li><a href="#ablauf">Ablauf</a></li>
-        <li><a href="#kontakt">Kontakt</a></li>
-        <li><a href="#kontakt" class="btn-nav">Trikots anfragen</a></li>
+        <li><a href="vereinswelt.html">Vereinswelt</a></li>
+        <li><a href="ueber-uns.html">Über uns</a></li>
+        <li><a href="#kontakt" class="btn-nav">Kontakt</a></li>
         <li><a href="https://api.hautnah-textil.de/admin/login" style="font-size:12px;color:rgba(0,0,0,0.25);" onmouseover="this.style.color='rgba(0,0,0,0.5)'" onmouseout="this.style.color='rgba(0,0,0,0.25)'">Login</a></li>
       </ul>
       <button class="burger" id="burger" aria-label="Menü">
@@ -99,15 +102,15 @@
     </div>
     <div class="mobile-menu" id="mobileMenu">
       <a href="#leistungen">Leistungen</a>
-      <a href="#ablauf">Ablauf</a>
-      <a href="#kontakt">Kontakt</a>
-      <a href="#kontakt" class="btn-nav">Trikots anfragen</a>
+      <a href="vereinswelt.html">Vereinswelt</a>
+      <a href="ueber-uns.html">Über uns</a>
+      <a href="#kontakt" class="btn-nav">Kontakt</a>
     </div>
   </nav>
 
   <!-- HERO -->
   <section class="hero-banner">
-    <div class="hero-banner-bg" id="heroBg" style="background-image:url('assets/foto-guinea-team.jpg')"></div>
+    <div class="hero-banner-bg" id="heroBg" style="background-image:url('assets/foto-rasen.jpg');background-position:center 28%"></div>
     <div class="hero-banner-overlay"></div>
     <div class="hero-banner-content container">
       <p class="hero-eyebrow anim-up" style="transition-delay:.05s">Für Vereine. Für Teams. Für euch.</p>
@@ -196,21 +199,6 @@
     </div>
   </section>
 
-  <!-- MEHR ALS TEXTIL -->
-  <section class="charity">
-    <div class="charity-inner">
-      <div class="charity-content">
-        <span class="label" style="color:var(--cyan)">Soziales Engagement</span>
-        <h2 style="color:#fff;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-.5px;margin:14px 0 20px;line-height:1.1">Trikots, die mehr<br>bedeuten.</h2>
-        <p style="color:rgba(255,255,255,.72);font-size:16px;line-height:1.8;margin-bottom:32px">Wir glauben, dass Sport verbindet – über Grenzen hinaus. Unsere Trikots tragen den hautnah-Schriftzug bis nach Guinea, wo wir ein lokales Team mit Ausrüstung unterstützen. Fußball als Sprache, Textil als Botschaft.</p>
-        <a href="#kontakt" class="btn-primary">Euer Verein, unsere Mission</a>
-      </div>
-      <div class="charity-img">
-        <img src="assets/foto-guinea-portrait.jpg" alt="Hautnah Trikot – Charity-Aktion Guinea" loading="lazy">
-      </div>
-    </div>
-  </section>
-
   <!-- USPs -->
   <section class="usps">
     <div class="container usps-inner">
@@ -233,69 +221,6 @@
         <div class="usp-num">04</div>
         <h4>Qualitätsgarantie</h4>
         <p>Jede Bestellung wird vor dem Versand geprüft. Qualität, die die Saison übersteht.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- STANNO PARTNER -->
-  <section class="stanno">
-    <div class="stanno-banner">
-      <div class="stanno-banner-bg"></div>
-      <div class="stanno-banner-content container">
-        <span class="label" style="color:#FF5200">Exklusiv-Druckpartner von Stanno &amp; Reece</span>
-        <h2>Werde Teil der<br>Stanno Vereinswelt.</h2>
-        <p>Als Exklusiv-Druckpartner von Stanno bringen wir die Stanno Vereinswelt direkt zu euch ins Ruhrgebiet. Über Stanno hinaus bedrucken wir auch Reece-Artikel mit gleicher Qualität – Vereinsausstattung, Trikots, Teamwear, alles aus einer Hand.</p>
-        <div class="stanno-vorteile">
-          <div class="stanno-vorteil">Beste Rabatte auf alle Stanno-Artikel</div>
-          <div class="stanno-vorteil">Professionelle Bedruckung – keine versteckten Kosten</div>
-          <div class="stanno-vorteil">Individuelles Design mit dem Stanno Special Design-Team</div>
-          <div class="stanno-vorteil">Von günstigen Trikots bis Bundesliga-Qualität</div>
-          <div class="stanno-vorteil">Trikots, Hosen, Stutzen, Socken & Teamwear – alles aus einer Hand</div>
-          <div class="stanno-vorteil">Partnerschaft auf Augenhöhe – direkt mit Stanno</div>
-        </div>
-        <a href="#kontakt" class="btn-primary">Jetzt Vereinsausrüstung anfragen</a>
-      </div>
-    </div>
-    <div class="stanno-grid container">
-      <div class="stanno-item">
-        <div class="stanno-item-img" style="background-image:url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Trikots.webp')"></div>
-        <div class="stanno-item-label">Trikots</div>
-      </div>
-      <div class="stanno-item">
-        <div class="stanno-item-img" style="background-image:url('https://www.stanno.com/media/cache/catalog/category/Categoriebanner_teamwear_1-1200xbw0c0q80.png')"></div>
-        <div class="stanno-item-label">Teamwear</div>
-      </div>
-      <div class="stanno-item">
-        <div class="stanno-item-img" style="background-image:url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Design_ohne_Titel-17.png')"></div>
-        <div class="stanno-item-label">Kollektion</div>
-      </div>
-      <div class="stanno-item">
-        <div class="stanno-item-img" style="background-image:url('https://cdn.deventrade.com/resizer/420x420/408039-7800-01.jpg')"></div>
-        <div class="stanno-item-label">Ausstattung</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAMILIENBETRIEB -->
-  <section class="familie" id="familie" style="padding:96px 0;background:var(--off);">
-    <div class="container" style="max-width:880px;margin:0 auto;padding:0 24px;">
-      <div class="section-head" style="text-align:center;margin-bottom:48px;">
-        <span class="label">Über uns</span>
-        <h2>Vier Portmanns, eine Werkstatt.</h2>
-        <p style="max-width:640px;margin:16px auto 0;color:var(--muted);font-size:17px;line-height:1.7;">
-          Familienbetrieb für Vereinstextil und Druck. Dortmund, seit 2016.
-        </p>
-      </div>
-      <div class="familie-text" style="max-width:680px;margin:0 auto;font-size:16px;line-height:1.85;color:#444;">
-        <p style="margin-bottom:20px;">
-          Die Hautnah Textil GmbH wurde 2016 gegründet und wird seither in der Familie Portmann geführt. <strong>Kirsten Portmann</strong> steht als Geschäftsführerin an der Spitze. Im operativen Tagesgeschäft arbeitet sie mit ihren Söhnen <strong>Niklas</strong> und <strong>Jannick</strong> – beraten wird das Team von <strong>Maik Portmann</strong>.
-        </p>
-        <p style="margin-bottom:20px;">
-          Familienbetrieb heißt bei uns nicht: Floskel auf der Website. Sondern: kein Callcenter, keine Hotline, keine Tickets. Wer anruft, redet mit einem Portmann.
-        </p>
-        <p style="margin-bottom:0;">
-          Im Amateursport des Ruhrgebiets ist das inzwischen ein Begriff – als Drucker, als Ausstatter und als Ansprechpartner für alles, was Vereine brauchen.
-        </p>
       </div>
     </div>
   </section>
@@ -376,6 +301,41 @@
           </div>
           <div class="form-group" id="fg-bestellnummer" style="display:none">
             <input type="text" name="bestellnummer" placeholder="Bestellnummer (falls vorhanden)">
+          </div>
+          <div class="form-group" id="fg-produktsuche" style="display:none">
+            <label class="form-label">Artikel suchen (Name, EAN oder Artikelnummer)</label>
+            <div class="produkt-suche-row">
+              <input type="text" id="inp-produktsuche" placeholder="z.B. Stanno Field, 8718726394922 oder 408005-5000" autocomplete="off">
+              <button type="button" class="btn-produkt-suche" id="btnProduktSuche">Suchen</button>
+            </div>
+            <div class="produkt-ergebnisse" id="produktErgebnisse"></div>
+            <div class="produkt-auswahl" id="produktAuswahl"></div>
+            <input type="hidden" name="produkte" id="inpProdukte">
+          </div>
+          <div class="form-group" id="fg-bedruckt" style="display:none">
+            <label class="form-label">Ist der Artikel bedruckt / individualisiert (Name, Logo, Nummer)? *</label>
+            <select name="bedruckt" id="inp-bedruckt">
+              <option value="" disabled selected>Bitte wählen</option>
+              <option value="nein">Nein</option>
+              <option value="ja">Ja</option>
+            </select>
+            <p class="form-hint produkt-bedruckt-hinweis" id="bedrucktHinweis" style="display:none">
+              Hinweis: Bedruckte bzw. individualisierte Artikel können nur bei Druckfehlern (z.&nbsp;B. Falschdruck) reklamiert werden.
+            </p>
+          </div>
+          <div class="form-group" id="fg-grund" style="display:none">
+            <label class="form-label">Reklamationsgrund *</label>
+            <select name="grund" id="inp-grund">
+              <option value="" disabled selected>Bitte wählen</option>
+              <option value="Falschdruck/Druckfehler">Falschdruck / Druckfehler</option>
+              <option value="Falsche Lieferung">Falsche Lieferung</option>
+              <option value="Materialfehler/Defekt">Materialfehler / Defekt</option>
+            </select>
+          </div>
+          <div class="form-group" id="fg-fotos" style="display:none">
+            <label class="form-label">Fotos zum Problem (optional, bis zu 3)</label>
+            <input type="file" name="fotos" id="inp-fotos" accept="image/*" multiple>
+            <p class="form-hint">JPG, PNG oder WebP – hilft uns bei der schnellen Bearbeitung.</p>
           </div>
           <div class="form-group" id="fg-lieferdatum" style="display:none">
             <label class="form-label">Wunsch-Lieferdatum</label>

@@ -9,11 +9,13 @@ import time
 import bcrypt
 import secrets as _secrets
 import threading
+from pathlib import Path
 from collections import defaultdict
 from datetime import timedelta
 import requests as http
+from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
-from database import init_db, get_db, formular_speichern
+from database import init_db, get_db, formular_speichern, produkt_suche
 
 app = Flask(__name__)
 
@@ -30,7 +32,16 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
+    MAX_CONTENT_LENGTH=20 * 1024 * 1024,  # 20 MB Gesamt-Upload (max 3 Fotos)
 )
+
+# Foto-Uploads für Reklamationen (von Flask-/static ausgeliefert)
+UPLOAD_DIR = Path(app.static_folder) / 'uploads' / 'reklamationen'
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+ERLAUBTE_BILD_EXT = {'.jpg', '.jpeg', '.png', '.webp'}
+MAX_FOTOS = 3
+# Reklamationsgründe, die auch bei bedruckten Artikeln zulässig sind
+DRUCK_GRUENDE = {'Falschdruck/Druckfehler'}
 
 init_db()
 
@@ -310,6 +321,29 @@ def _get_client_ip() -> str:
         or ''
     ).strip()
 
+@app.route('/api/produkt/suche', methods=['GET', 'OPTIONS'])
+def api_produkt_suche():
+    if request.method == 'OPTIONS':
+        return '', 204
+    q = request.args.get('q', '')
+    return jsonify({'treffer': produkt_suche(q)})
+
+
+def _fotos_speichern(dateien) -> list:
+    """Hochgeladene Reklamationsfotos validieren und speichern; gibt Web-Pfade zurück."""
+    pfade = []
+    for f in dateien[:MAX_FOTOS]:
+        if not f or not f.filename:
+            continue
+        ext = os.path.splitext(secure_filename(f.filename))[1].lower()
+        if ext not in ERLAUBTE_BILD_EXT:
+            continue
+        name = f'{_secrets.token_hex(16)}{ext}'
+        f.save(UPLOAD_DIR / name)
+        pfade.append(f'/static/uploads/reklamationen/{name}')
+    return pfade
+
+
 @app.route('/api/kontakt', methods=['POST', 'OPTIONS'])
 def api_kontakt():
     if request.method == 'OPTIONS':
@@ -320,7 +354,18 @@ def api_kontakt():
         app.logger.warning(f'Rate-Limit Kontaktformular: {ip}')
         return jsonify({'ok': True}), 200
 
-    data      = request.get_json(silent=True) or {}
+    # Eingaben einheitlich aus JSON ODER multipart/form-data lesen
+    if request.content_type and 'multipart/form-data' in request.content_type:
+        data = {k: v for k, v in request.form.items()}
+        # JSON-codierte Felder (Produkt-Auswahl) wieder zu Listen/Dicts machen
+        for feld in ('produkte', 'artikel'):
+            if isinstance(data.get(feld), str):
+                try:
+                    data[feld] = json.loads(data[feld])
+                except (ValueError, TypeError):
+                    pass
+    else:
+        data = request.get_json(silent=True) or {}
 
     # Bot-Schutz: Honeypot-Feld muss leer sein
     if data.get('website', ''):
@@ -337,6 +382,25 @@ def api_kontakt():
     kategorie = data.get('kategorie', 'nachricht')
     name      = data.get('vereinsname') or data.get('name') or '–'
     email_von = data.get('email', '')
+
+    # Reklamations-Sonderregel: bedruckte Artikel nur bei druckbezogenem Grund
+    if kategorie == 'reklamation' and str(data.get('bedruckt', '')).lower() == 'ja' \
+            and data.get('grund') not in DRUCK_GRUENDE:
+        return jsonify({
+            'ok': False,
+            'error': 'Bedruckte bzw. individualisierte Artikel können nur bei '
+                     'Druckfehlern (z. B. Falschdruck) reklamiert werden.'
+        }), 400
+
+    # Fotos (nur bei multipart) speichern und als Pfade in den Daten ablegen
+    if request.files:
+        fotos = _fotos_speichern(request.files.getlist('fotos'))
+        if fotos:
+            data['fotos'] = fotos
+
+    # interne Felder nicht persistieren
+    for feld in ('website', '_t'):
+        data.pop(feld, None)
 
     # quelle markieren damit im Dashboard klar ist: Website vs. WhatsApp
     data['quelle'] = 'website'

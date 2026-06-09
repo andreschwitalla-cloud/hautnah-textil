@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Stanno Vereinswelt – Hautnah Textil | Exklusiv-Druckpartner</title>
+  <meta name="description" content="Als Exklusiv-Druckpartner von Stanno & Reece bringen wir die Stanno Vereinswelt ins Ruhrgebiet: Trikots, Teamwear und Vereinsausstattung – individuell bedruckt, alles aus einer Hand.">
+  <link rel="canonical" href="https://www.hautnah-textil.de/vereinswelt.html">
+
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <link rel="apple-touch-icon" href="/assets/logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <img src="assets/logo.png" alt="hautnah Textildruck" class="logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#leistungen">Leistungen</a></li>
+        <li><a href="vereinswelt.html" style="color:var(--cyan)">Vereinswelt</a></li>
+        <li><a href="ueber-uns.html">Über uns</a></li>
+        <li><a href="index.html#kontakt" class="btn-nav">Kontakt</a></li>
+      </ul>
+      <button class="burger" id="burger" aria-label="Menü">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html#leistungen">Leistungen</a>
+      <a href="vereinswelt.html" style="color:var(--cyan)">Vereinswelt</a>
+      <a href="ueber-uns.html">Über uns</a>
+      <a href="index.html#kontakt" class="btn-nav">Kontakt</a>
+    </div>
+  </nav>
+
+  <!-- STANNO PARTNER -->
+  <section class="stanno" style="margin-top:64px;">
+    <div class="stanno-banner">
+      <div class="stanno-banner-bg"></div>
+      <div class="stanno-banner-content container">
+        <span class="label" style="color:#FF5200">Exklusiv-Druckpartner von Stanno &amp; Reece</span>
+        <h2>Werde Teil der<br>Stanno Vereinswelt.</h2>
+        <p>Als Exklusiv-Druckpartner von Stanno bringen wir die Stanno Vereinswelt direkt zu euch ins Ruhrgebiet. Über Stanno hinaus bedrucken wir auch Reece-Artikel mit gleicher Qualität – Vereinsausstattung, Trikots, Teamwear, alles aus einer Hand.</p>
+        <div class="stanno-vorteile">
+          <div class="stanno-vorteil">Beste Rabatte auf alle Stanno-Artikel</div>
+          <div class="stanno-vorteil">Professionelle Bedruckung – keine versteckten Kosten</div>
+          <div class="stanno-vorteil">Individuelles Design mit dem Stanno Special Design-Team</div>
+          <div class="stanno-vorteil">Von günstigen Trikots bis Bundesliga-Qualität</div>
+          <div class="stanno-vorteil">Trikots, Hosen, Stutzen, Socken & Teamwear – alles aus einer Hand</div>
+          <div class="stanno-vorteil">Partnerschaft auf Augenhöhe – direkt mit Stanno</div>
+        </div>
+        <a href="index.html#kontakt" class="btn-primary">Jetzt Vereinsausrüstung anfragen</a>
+      </div>
+    </div>
+    <div class="stanno-grid container">
+      <div class="stanno-item">
+        <div class="stanno-item-img" style="background-image:url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Trikots.webp')"></div>
+        <div class="stanno-item-label">Trikots</div>
+      </div>
+      <div class="stanno-item">
+        <div class="stanno-item-img" style="background-image:url('https://www.stanno.com/media/cache/catalog/category/Categoriebanner_teamwear_1-1200xbw0c0q80.png')"></div>
+        <div class="stanno-item-label">Teamwear</div>
+      </div>
+      <div class="stanno-item">
+        <div class="stanno-item-img" style="background-image:url('https://www.stanno.com/media/wysiwyg/Stanno-DE/Design_ohne_Titel-17.png')"></div>
+        <div class="stanno-item-label">Kollektion</div>
+      </div>
+      <div class="stanno-item">
+        <div class="stanno-item-img" style="background-image:url('https://cdn.deventrade.com/resizer/420x420/408039-7800-01.jpg')"></div>
+        <div class="stanno-item-label">Ausstattung</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <img src="assets/logo-weiss.png" alt="hautnah Textildruck" class="logo-img logo-img--footer" loading="lazy">
+      </div>
+      <div class="footer-links">
+        <a href="vereinswelt.html">Vereinswelt</a>
+        <a href="ueber-uns.html">Über uns</a>
+        <a href="faq.html">FAQ</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+      </div>
+      <p class="footer-copy">&copy; 2025 Hautnah Textil GmbH</p>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20));
+    const burger = document.getElementById('burger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  </script>
+</body>
+</html>

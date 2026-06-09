@@ -250,6 +250,78 @@
   </div>
   {% endif %}
 
+  {% if f.daten.get('bedruckt') or f.daten.get('grund') %}
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title">Reklamationsdetails</div>
+    {% if f.daten.get('grund') %}
+    <div class="info-row">
+      <span class="info-label">Grund</span>
+      <span class="info-value">{{ f.daten.get('grund') }}</span>
+    </div>
+    {% endif %}
+    {% if f.daten.get('bedruckt') %}
+    <div class="info-row">
+      <span class="info-label">Bedruckt / individualisiert</span>
+      <span class="info-value">{{ 'Ja' if f.daten.get('bedruckt') == 'ja' else 'Nein' }}</span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if f.daten.get('produkte') %}
+  <div class="artikel-section">
+    <div class="section-label">Gewählte Artikel (Stanno-Katalog)</div>
+    {% for p in f.daten.get('produkte') %}
+    <div class="artikel-card">
+      <div class="artikel-header">
+        <span class="artikel-name">{{ p.get('bezeichnung', '–') }}</span>
+        <span class="artikel-nr">{{ p.get('artikelnummer') or p.get('ean') }}</span>
+      </div>
+      <div class="artikel-body">
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          {% if p.get('bild') %}
+          <img src="{{ p.get('bild') }}" alt="" style="width:72px;height:72px;object-fit:contain;border-radius:var(--radius);background:var(--bg);flex:0 0 auto;">
+          {% endif %}
+          <div class="artikel-grid" style="flex:1;">
+            <div class="artikel-field">
+              <div class="artikel-field-label">Größe</div>
+              <div class="artikel-field-value">{{ p.get('groesse', '–') }}</div>
+            </div>
+            <div class="artikel-field">
+              <div class="artikel-field-label">Farbe</div>
+              <div class="artikel-field-value">{{ p.get('farbe') or p.get('hauptfarbe') or '–' }}</div>
+            </div>
+            <div class="artikel-field">
+              <div class="artikel-field-label">EAN</div>
+              <div class="artikel-field-value">{{ p.get('ean', '–') }}</div>
+            </div>
+            {% if p.get('preis') %}
+            <div class="artikel-field">
+              <div class="artikel-field-label">Preis</div>
+              <div class="artikel-field-value">{{ p.get('preis') }} €</div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if f.daten.get('fotos') %}
+  <div class="artikel-section">
+    <div class="section-label">Fotos zur Reklamation</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      {% for foto in f.daten.get('fotos') %}
+      <a href="{{ foto }}" target="_blank" rel="noopener">
+        <img src="{{ foto }}" alt="Foto {{ loop.index }}" style="width:120px;height:120px;object-fit:cover;border-radius:var(--radius-lg);border:0.5px solid var(--border);">
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   {% if not papierkorb and f.antwort %}
   <div class="antwort-box" id="antwortBox">
     <div class="antwort-label">Gesendete Antwort</div>
