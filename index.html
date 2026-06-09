@@ -70,7 +70,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
   <meta name="robots" content="index, follow">
-  <link rel="stylesheet" href="style.css?v=20260609e">
+  <link rel="stylesheet" href="style.css?v=20260609f">
 </head>
 <body>
 
@@ -290,15 +290,6 @@
           <div class="form-group" id="fg-telefon" style="display:none">
             <input type="tel" name="telefon" id="inp-telefon" placeholder="Telefonnummer">
           </div>
-          <div class="form-group" id="fg-artikel" style="display:none">
-            <div class="artikel-liste" id="artikelListe">
-              <div class="artikel-row">
-                <input type="text" name="artikel[]" placeholder="Artikel (z.B. Trikot, Hose, Jacke)">
-                <input type="number" name="menge[]" placeholder="Stück" min="1" class="inp-menge">
-              </div>
-            </div>
-            <button type="button" class="btn-add-row">+ Artikel hinzufügen</button>
-          </div>
           <div class="form-group" id="fg-bestellnummer" style="display:none">
             <input type="text" name="bestellnummer" placeholder="Bestellnummer (falls vorhanden)">
           </div>
@@ -311,6 +302,13 @@
             <div class="produkt-ergebnisse" id="produktErgebnisse"></div>
             <div class="produkt-auswahl" id="produktAuswahl"></div>
             <input type="hidden" name="produkte" id="inpProdukte">
+          </div>
+          <div class="form-group" id="fg-beflockung" style="display:none">
+            <label class="form-label">Beflockung / Druck (optional)</label>
+            <textarea name="beflockung" id="inp-beflockung" rows="3" placeholder="Wo soll was bedruckt werden? z. B. Vereinsname auf der Brust, Rückennummern, Sponsor auf dem Ärmel …"></textarea>
+            <label class="form-label" style="margin-top:12px">Vereinslogo hochladen (optional)</label>
+            <input type="file" name="logo" id="inp-logo" accept="image/*,.svg,.pdf">
+            <p class="form-hint">PNG, JPG, SVG oder PDF – fürs Druck-Layout.</p>
           </div>
           <div class="form-group" id="fg-bedruckt" style="display:none">
             <label class="form-label">Ist der Artikel bedruckt / individualisiert (Name, Logo, Nummer)? *</label>
@@ -400,7 +398,7 @@
     </div>
   </footer>
 
-  <script src="main.js?v=20260609e"></script>
-  <script src="reveal.js?v=20260609e"></script>
+  <script src="main.js?v=20260609f"></script>
+  <script src="reveal.js?v=20260609f"></script>
 </body>
 </html>

@@ -799,6 +799,9 @@ textarea { resize: vertical; }
   font-size: 13px;
 }
 .produkt-chip small { color: var(--muted); }
+.produkt-chip-info { flex: 1; min-width: 0; }
+.produkt-chip-menge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.produkt-chip-menge input { width: 62px; padding: 6px 8px; font-size: 13px; }
 .produkt-chip-x {
   background: none;
   border: none;

@@ -284,6 +284,10 @@
           {% endif %}
           <div class="artikel-grid" style="flex:1;">
             <div class="artikel-field">
+              <div class="artikel-field-label">Menge</div>
+              <div class="artikel-field-value">{{ p.get('menge', 1) }} Stück</div>
+            </div>
+            <div class="artikel-field">
               <div class="artikel-field-label">Größe</div>
               <div class="artikel-field-value">{{ p.get('groesse', '–') }}</div>
             </div>
@@ -306,6 +310,21 @@
       </div>
     </div>
     {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if f.daten.get('beflockung') or f.daten.get('logo') %}
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title">Beflockung / Druck</div>
+    {% if f.daten.get('beflockung') %}
+    <div class="nachricht-text" style="margin-bottom:12px;">{{ f.daten.get('beflockung') }}</div>
+    {% endif %}
+    {% if f.daten.get('logo') %}
+    <a href="{{ f.daten.get('logo') }}" target="_blank" rel="noopener" style="display:inline-block;">
+      <img src="{{ f.daten.get('logo') }}" alt="Vereinslogo" style="max-width:170px;max-height:130px;border:0.5px solid var(--border);border-radius:var(--radius);background:#fff;padding:8px;">
+      <div style="font-size:12px;color:var(--cyan);margin-top:4px;">Logo öffnen ↗</div>
+    </a>
+    {% endif %}
   </div>
   {% endif %}
 

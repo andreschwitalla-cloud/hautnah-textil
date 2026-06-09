@@ -39,6 +39,7 @@ app.config.update(
 UPLOAD_DIR = Path(app.static_folder) / 'uploads' / 'reklamationen'
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ERLAUBTE_BILD_EXT = {'.jpg', '.jpeg', '.png', '.webp'}
+ERLAUBTE_LOGO_EXT = {'.jpg', '.jpeg', '.png', '.webp', '.svg', '.pdf'}
 MAX_FOTOS = 3
 # Reklamationsgründe, die auch bei bedruckten Artikeln zulässig sind
 DRUCK_GRUENDE = {'Falschdruck/Druckfehler'}
@@ -329,14 +330,14 @@ def api_produkt_suche():
     return jsonify({'treffer': produkt_suche(q)})
 
 
-def _fotos_speichern(dateien) -> list:
-    """Hochgeladene Reklamationsfotos validieren und speichern; gibt Web-Pfade zurück."""
+def _upload_speichern(dateien, erlaubte_ext, max_anzahl) -> list:
+    """Hochgeladene Dateien validieren und speichern; gibt Web-Pfade zurück."""
     pfade = []
-    for f in dateien[:MAX_FOTOS]:
+    for f in dateien[:max_anzahl]:
         if not f or not f.filename:
             continue
         ext = os.path.splitext(secure_filename(f.filename))[1].lower()
-        if ext not in ERLAUBTE_BILD_EXT:
+        if ext not in erlaubte_ext:
             continue
         name = f'{_secrets.token_hex(16)}{ext}'
         f.save(UPLOAD_DIR / name)
@@ -392,11 +393,14 @@ def api_kontakt():
                      'Druckfehlern (z. B. Falschdruck) reklamiert werden.'
         }), 400
 
-    # Fotos (nur bei multipart) speichern und als Pfade in den Daten ablegen
+    # Datei-Uploads (nur bei multipart) speichern und als Pfade in den Daten ablegen
     if request.files:
-        fotos = _fotos_speichern(request.files.getlist('fotos'))
+        fotos = _upload_speichern(request.files.getlist('fotos'), ERLAUBTE_BILD_EXT, MAX_FOTOS)
         if fotos:
             data['fotos'] = fotos
+        logo = _upload_speichern(request.files.getlist('logo'), ERLAUBTE_LOGO_EXT, 1)
+        if logo:
+            data['logo'] = logo[0]
 
     # interne Felder nicht persistieren
     for feld in ('website', '_t'):

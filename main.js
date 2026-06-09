@@ -51,12 +51,12 @@ const DRUCK_GRUENDE = ['Falschdruck/Druckfehler'];
 
 const kategorienConfig = {
   bestellung: {
-    felder: ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-produktsuche', 'fg-artikel', 'fg-lieferdatum', 'fg-nachricht'],
+    felder: ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-produktsuche', 'fg-beflockung', 'fg-lieferdatum', 'fg-nachricht'],
     pflicht: ['inp-vereinsname', 'inp-email'],
-    nachrichtPlaceholder: 'Besondere Wünsche? Welche Saison, Logos, Größen?'
+    nachrichtPlaceholder: 'Besondere Wünsche? Welche Saison, Größen?'
   },
   angebot: {
-    felder: ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-produktsuche', 'fg-artikel', 'fg-nachricht'],
+    felder: ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-produktsuche', 'fg-beflockung', 'fg-nachricht'],
     pflicht: ['inp-vereinsname', 'inp-email'],
     nachrichtPlaceholder: 'Was soll angeboten werden? (optional)'
   },
@@ -82,7 +82,7 @@ const kategorienConfig = {
   }
 };
 
-const alleFelder = ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-artikel',
+const alleFelder = ['fg-vereinsname', 'fg-email', 'fg-telefon', 'fg-beflockung',
   'fg-lieferdatum', 'fg-bestellnummer', 'fg-produktsuche', 'fg-bedruckt',
   'fg-grund', 'fg-fotos', 'fg-rueckruf_zeit', 'fg-nachricht'];
 
@@ -137,25 +137,39 @@ document.querySelectorAll('.kat-btn').forEach(btn => {
 
 // ── Produktsuche (Stanno-Katalog) ──────────────────────────────────────────────
 
+function syncProdukteHidden() {
+  const hidden = document.getElementById('inpProdukte');
+  if (hidden) hidden.value = gewaehlteProdukte.length ? JSON.stringify(gewaehlteProdukte) : '';
+}
+
 function renderProduktAuswahl() {
   const box = document.getElementById('produktAuswahl');
-  const hidden = document.getElementById('inpProdukte');
-  if (!box || !hidden) return;
+  if (!box) return;
+  const mitMenge = MEHRFACH_PRODUKTE.includes(aktuelleKategorie);
   box.innerHTML = gewaehlteProdukte.map((p, i) => `
     <div class="produkt-chip">
-      <span>${p.bezeichnung} · Gr. ${p.groesse || '–'} · ${p.farbe || p.hauptfarbe || ''} <small>(${p.artikelnummer || p.ean})</small></span>
+      <span class="produkt-chip-info">${p.bezeichnung} · Gr. ${p.groesse || '–'} · ${p.farbe || p.hauptfarbe || ''} <small>(${p.artikelnummer || p.ean})</small></span>
+      ${mitMenge ? `<label class="produkt-chip-menge">Menge <input type="number" min="1" value="${p.menge || 1}" data-i="${i}" aria-label="Menge"></label>` : ''}
       <button type="button" class="produkt-chip-x" data-i="${i}" aria-label="Entfernen">✕</button>
     </div>`).join('');
-  hidden.value = gewaehlteProdukte.length ? JSON.stringify(gewaehlteProdukte) : '';
+  syncProdukteHidden();
   box.querySelectorAll('.produkt-chip-x').forEach(btn => {
     btn.addEventListener('click', () => {
       gewaehlteProdukte.splice(Number(btn.dataset.i), 1);
       renderProduktAuswahl();
     });
   });
+  box.querySelectorAll('.produkt-chip-menge input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const v = Math.max(1, parseInt(inp.value, 10) || 1);
+      gewaehlteProdukte[Number(inp.dataset.i)].menge = v;
+      syncProdukteHidden();
+    });
+  });
 }
 
 function produktWaehlen(p) {
+  p.menge = p.menge || 1;
   if (MEHRFACH_PRODUKTE.includes(aktuelleKategorie)) {
     if (!gewaehlteProdukte.some(x => x.ean === p.ean)) gewaehlteProdukte.push(p);
   } else {
@@ -234,17 +248,6 @@ function setzeBedrucktRegel() {
 const bedrucktEl = document.getElementById('inp-bedruckt');
 if (bedrucktEl) bedrucktEl.addEventListener('change', setzeBedrucktRegel);
 
-// Artikel-Repeater
-const addRowBtn = document.querySelector('.btn-add-row');
-if (addRowBtn) {
-  addRowBtn.addEventListener('click', () => {
-    const row = document.createElement('div');
-    row.className = 'artikel-row';
-    row.innerHTML = '<input type="text" name="artikel[]" placeholder="Artikel"><input type="number" name="menge[]" placeholder="Stück" min="1" class="inp-menge">';
-    document.getElementById('artikelListe').appendChild(row);
-  });
-}
-
 // Form Submit → Backend speichert im Dashboard, sendet Email
 const kontaktForm = document.getElementById('kontaktForm');
 if (kontaktForm) {
@@ -266,29 +269,28 @@ if (kontaktForm) {
     submitBtn.textContent = 'Wird gesendet …';
 
     const data = Object.fromEntries(new FormData(this).entries());
-    // Artikel-Arrays separat zusammensetzen
-    const artikel = [...this.querySelectorAll('[name="artikel[]"]')].map(el => el.value).filter(Boolean);
-    const mengen  = [...this.querySelectorAll('[name="menge[]"]')].map(el => el.value);
-    if (artikel.length) data.artikel = artikel.map((a, i) => ({ artikel: a, menge: mengen[i] || '' }));
 
-    // Ausgewählte Katalog-Produkte mitschicken
+    // Ausgewählte Katalog-Produkte (inkl. Menge) mitschicken
     if (gewaehlteProdukte.length) data.produkte = gewaehlteProdukte;
 
-    // Fotos (nur Reklamation) → bei vorhandenen Dateien multipart senden
+    // Datei-Uploads → multipart wenn Fotos (Reklamation) oder Logo (Bestellung/Angebot) dabei
     const fotoInput = document.getElementById('inp-fotos');
     const fotos = fotoInput && fotoInput.files ? [...fotoInput.files].slice(0, 3) : [];
+    const logoInput = document.getElementById('inp-logo');
+    const logo = logoInput && logoInput.files && logoInput.files[0] ? logoInput.files[0] : null;
 
     let fetchOpts;
-    if (fotos.length) {
+    if (fotos.length || logo) {
       const fd = new FormData();
       Object.entries(data).forEach(([k, v]) => {
-        if (k === 'fotos') return;  // Datei-Input separat behandeln
+        if (k === 'fotos' || k === 'logo') return;  // Datei-Inputs separat behandeln
         fd.append(k, typeof v === 'object' ? JSON.stringify(v) : v);
       });
       fotos.forEach(f => fd.append('fotos', f));
+      if (logo) fd.append('logo', logo);
       fetchOpts = { method: 'POST', body: fd };  // Browser setzt multipart-Header
     } else {
-      delete data.fotos;
+      delete data.fotos; delete data.logo;
       fetchOpts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) };
     }
 
