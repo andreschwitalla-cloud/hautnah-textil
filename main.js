@@ -10,12 +10,19 @@ if (intro) {
     heroEinblenden();
   } else {
     try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
-    // Autoplay auf Mobil zuverlässiger anstoßen (muted + play() mit catch)
+    // Autoplay auf Mobil zuverlässiger anstoßen (muted + play() über mehrere Events)
     const vid = intro.querySelector('video');
     if (vid) {
       vid.muted = true;
-      const pr = vid.play();
-      if (pr && pr.catch) pr.catch(() => {});
+      const tryPlay = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
+      tryPlay();
+      vid.addEventListener('loadeddata', tryPlay, { once: true });
+      vid.addEventListener('canplay', tryPlay, { once: true });
+      // Fallback: spielt das Video nach kurzer Zeit nicht (Autoplay blockiert, z.B.
+      // iOS-Stromsparmodus), dann Standbild ausblenden → sauberer Logo-Splash.
+      setTimeout(() => {
+        if (vid.paused || vid.currentTime === 0) intro.classList.add('kein-video');
+      }, 900);
     }
     setTimeout(() => {
       intro.classList.add('exit');
