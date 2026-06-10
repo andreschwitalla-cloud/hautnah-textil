@@ -10,27 +10,32 @@ if (intro) {
     heroEinblenden();
   } else {
     try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
-    // Autoplay auf Mobil zuverlässiger anstoßen (muted + play() über mehrere Events)
-    const vid = intro.querySelector('video');
-    if (vid) {
-      vid.muted = true;
-      const tryPlay = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
-      tryPlay();
-      vid.addEventListener('loadeddata', tryPlay, { once: true });
-      vid.addEventListener('canplay', tryPlay, { once: true });
-      // Fallback: spielt das Video nach kurzer Zeit nicht (Autoplay blockiert, z.B.
-      // iOS-Stromsparmodus), dann Standbild ausblenden → sauberer Logo-Splash.
-      setTimeout(() => {
-        if (vid.paused || vid.currentTime === 0) intro.classList.add('kein-video');
-      }, 900);
+    const exit = () => {
+      intro.classList.add('exit');           // Iris-Close = Zoom-out in die Seite
+      setTimeout(() => { intro.remove(); heroEinblenden(); }, 700);
+    };
+    const istMobil = window.matchMedia('(max-width: 768px)').matches;
+    if (istMobil) {
+      // Mobil: kein Video (Autoplay ist gesperrt) – 2 s Standbild, dann Zoom-out
+      intro.classList.add('kein-video');     // Video-Frame ausblenden
+      intro.style.backgroundImage = "url('assets/intro-poster.jpg?v=2')";
+      intro.style.backgroundSize = 'cover';
+      intro.style.backgroundPosition = 'center';
+      const vid = intro.querySelector('video');
+      if (vid) { try { vid.pause(); } catch (e) {} }
+      setTimeout(exit, 2000);
+    } else {
+      // Desktop: Video abspielen, dann nach 4 s Zoom-out
+      const vid = intro.querySelector('video');
+      if (vid) {
+        vid.muted = true;
+        const tryPlay = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
+        tryPlay();
+        vid.addEventListener('loadeddata', tryPlay, { once: true });
+        vid.addEventListener('canplay', tryPlay, { once: true });
+      }
+      setTimeout(exit, 4000);
     }
-    setTimeout(() => {
-      intro.classList.add('exit');
-      setTimeout(() => {
-        intro.remove();
-        heroEinblenden();
-      }, 700);
-    }, 4000);
   }
 }
 
