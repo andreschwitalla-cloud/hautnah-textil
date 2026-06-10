@@ -10,6 +10,13 @@ if (intro) {
     heroEinblenden();
   } else {
     try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
+    // Autoplay auf Mobil zuverlässiger anstoßen (muted + play() mit catch)
+    const vid = intro.querySelector('video');
+    if (vid) {
+      vid.muted = true;
+      const pr = vid.play();
+      if (pr && pr.catch) pr.catch(() => {});
+    }
     setTimeout(() => {
       intro.classList.add('exit');
       setTimeout(() => {
