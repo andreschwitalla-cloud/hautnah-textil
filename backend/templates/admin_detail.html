@@ -121,6 +121,7 @@
       {% elif f.typ == 'liefertermin' %}Liefertermin
       {% elif f.typ == 'reklamation' %}Reklamation
       {% elif f.typ == 'rueckruf' %}Rückruf
+      {% elif f.typ == 'shop_bestellung' %}🛒 Shop-Bestellung
       {% else %}Nachricht{% endif %}
       {% if f.name %} · {{ f.name }}{% endif %}
     </span>
@@ -220,6 +221,46 @@
       </div>
     </div>
   </div>
+
+  {% if f.typ == 'shop_bestellung' %}
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title">Shop-Bestellung · Zahlung auf Rechnung</div>
+    <div class="info-row"><span class="info-label">Rechnungsadresse</span><span class="info-value">{{ f.daten.get('rechnungsadresse','–') }}</span></div>
+    <div class="info-row"><span class="info-label">Summe</span><span class="info-value">{{ ('%.2f' % f.daten.get('summe', 0))|replace('.', ',') }} € <small style="color:var(--muted)">inkl. MwSt, zzgl. Versand</small></span></div>
+    {% if f.daten.get('anmerkung') %}<div class="info-row"><span class="info-label">Anmerkung</span><span class="info-value">{{ f.daten.get('anmerkung') }}</span></div>{% endif %}
+  </div>
+  <div class="artikel-section">
+    <div class="section-label">Bestellpositionen</div>
+    {% for p in f.daten.get('positionen', []) %}
+    <div class="artikel-card">
+      <div class="artikel-header">
+        <span class="artikel-name">{{ p.get('menge') }}× {{ p.get('name') }} – {{ p.get('farbe') }} / Gr. {{ p.get('groesse') }}</span>
+        <span class="artikel-nr">{{ p.get('artikelnummer') }}</span>
+      </div>
+      <div class="artikel-body">
+        <div class="artikel-grid">
+          <div class="artikel-field"><div class="artikel-field-label">Einzelpreis</div><div class="artikel-field-value">{{ ('%.2f' % p.get('preis', 0))|replace('.', ',') }} €</div></div>
+          <div class="artikel-field"><div class="artikel-field-label">Menge</div><div class="artikel-field-value">{{ p.get('menge') }}</div></div>
+        </div>
+        {% if p.get('beflockung') %}
+        {% set b = p.get('beflockung') %}
+        <div class="artikel-field" style="margin-top:8px;">
+          <div class="artikel-field-label">Beflockung (+{{ ('%.2f' % b.get('aufpreis', 0))|replace('.', ',') }} €/Stück)</div>
+          <div class="artikel-field-value" style="font-weight:400;line-height:1.6;">
+            {{ b.get('arten', [])|join(', ') }}
+            {% if b.get('name_text') %}· Name „{{ b.get('name_text') }}"{% endif %}
+            {% if b.get('nummer_text') %}· Nr. {{ b.get('nummer_text') }}{% endif %}
+            {% if b.get('platzierung') %}· {{ b.get('platzierung') }}{% endif %}
+            {% if b.get('hinweis') %}<br>Hinweis: {{ b.get('hinweis') }}{% endif %}
+            {% if b.get('logo_url') %}<br><a href="{{ b.get('logo_url') }}" target="_blank" rel="noopener" style="color:var(--cyan);">Logo öffnen ↗</a>{% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   {% if f.daten.get('nachricht') %}
   <div class="nachricht-card">
