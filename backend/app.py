@@ -191,9 +191,9 @@ def admin_anfrage_antworten(fid):
     text = (request.json or {}).get('text', '').strip()
     if not text:
         return jsonify({'ok': False, 'error': 'Kein Text'})
-    api_key = os.getenv('RESEND_API_KEY')
-    if not api_key:
-        return jsonify({'ok': False, 'error': 'RESEND_API_KEY fehlt'})
+    mailer_key = os.getenv('MAILER_KEY')
+    if not mailer_key:
+        return jsonify({'ok': False, 'error': 'MAILER_KEY fehlt'})
 
     SIGNATUR = (
         '\n\n'
@@ -211,24 +211,23 @@ def admin_anfrage_antworten(fid):
         text = text + SIGNATUR
 
     payload = {
-        'from':     'Hautnah Textil <noreply@hautnah-textil.de>',
-        'to':       [email_to],
+        'to':       email_to,
         'subject':  f"Re: Ihre Anfrage bei Hautnah Textil – {f['typ']}",
         'text':     text,
         'reply_to': 'hautnah-textil@gmx.de',
     }
     try:
         r = http.post(
-            'https://api.resend.com/emails',
-            headers={'Authorization': f'Bearer {api_key}'},
+            'http://127.0.0.1:5020/send',
+            headers={'Authorization': f'Bearer {mailer_key}'},
             json=payload,
             timeout=8
         )
         if not r.ok:
-            app.logger.error(f'Resend Fehler {r.status_code}: {r.text}')
+            app.logger.error(f'Mailer Fehler {r.status_code}: {r.text}')
             return jsonify({'ok': False, 'error': 'E-Mail-Versand fehlgeschlagen. Details im Server-Log.'}), 502
     except Exception as e:
-        app.logger.error(f'Resend Exception: {e}')
+        app.logger.error(f'Mailer Exception: {e}')
         return jsonify({'ok': False, 'error': 'E-Mail-Versand fehlgeschlagen. Details im Server-Log.'}), 502
     with get_db() as db:
         db.execute(
