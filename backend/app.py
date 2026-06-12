@@ -416,9 +416,12 @@ def api_kontakt():
 
 
 def _email_benachrichtigung(kategorie: str, name: str, email_von: str, data: dict):
-    api_key = os.getenv('RESEND_API_KEY')
-    if not api_key:
-        app.logger.warning('Email-Versand übersprungen: RESEND_API_KEY nicht gesetzt.')
+    # Versand über den zentralen DAMN-Mailer (Amazon SES) statt Resend.
+    # Mailer läuft auf demselben Host (127.0.0.1:5020); Absender kommt aus der
+    # Projekt-Config (kontakt@hautnah-textil.de). Key + Empfänger aus der .env.
+    mailer_key = os.getenv('MAILER_KEY')
+    if not mailer_key:
+        app.logger.warning('Email-Versand übersprungen: MAILER_KEY nicht gesetzt.')
         return
 
     skip   = {'kategorie', 'quelle'}
@@ -437,8 +440,7 @@ def _email_benachrichtigung(kategorie: str, name: str, email_von: str, data: dic
             zeilen.append(f'{k}: {v}')
 
     payload = {
-        'from':    'Hautnah Textil <noreply@hautnah-textil.de>',
-        'to':      [os.getenv('RESEND_TO', 'hautnah-textil@gmx.de')],
+        'to':      os.getenv('KONTAKT_TO', 'eingang@hautnah-textil.de'),
         'subject': f'Neue Anfrage – {kategorie.capitalize()} – {name}',
         'text':    '\n'.join(zeilen),
     }
@@ -447,15 +449,15 @@ def _email_benachrichtigung(kategorie: str, name: str, email_von: str, data: dic
 
     try:
         r = http.post(
-            'https://api.resend.com/emails',
-            headers={'Authorization': f'Bearer {api_key}'},
+            'http://127.0.0.1:5020/send',
+            headers={'Authorization': f'Bearer {mailer_key}'},
             json=payload,
             timeout=8
         )
         if not r.ok:
-            app.logger.error(f'Resend Fehler {r.status_code}: {r.text}')
+            app.logger.error(f'Mailer Fehler {r.status_code}: {r.text}')
     except Exception as e:
-        app.logger.error(f'Resend Exception: {e}')
+        app.logger.error(f'Mailer Exception: {e}')
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
