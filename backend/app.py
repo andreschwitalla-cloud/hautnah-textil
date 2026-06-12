@@ -41,6 +41,17 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ERLAUBTE_BILD_EXT = {'.jpg', '.jpeg', '.png', '.webp'}
 ERLAUBTE_LOGO_EXT = {'.jpg', '.jpeg', '.png', '.webp', '.svg', '.pdf'}
 MAX_FOTOS = 3
+
+
+@app.after_request
+def _uploads_als_download(resp):
+    # Sicherheit: Reklamations-Uploads (inkl. SVG/PDF-Logos) NIE inline rendern.
+    # Erzwingt Download statt Anzeige → ein präpariertes SVG kann kein Script
+    # im Admin-Kontext ausführen (SVG-XSS). Bilder im <img> zeigen weiter normal.
+    if request.path.startswith('/static/uploads/reklamationen/'):
+        resp.headers['Content-Disposition'] = 'attachment'
+        resp.headers['X-Content-Type-Options'] = 'nosniff'
+    return resp
 # Reklamationsgründe, die auch bei bedruckten Artikeln zulässig sind
 DRUCK_GRUENDE = {'Falschdruck/Druckfehler'}
 
